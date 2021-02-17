@@ -83,8 +83,14 @@ class PyxHTMLParser(HTMLParser):
         m = re.search(r' +', self.data[-2::-1])
         if m is None:
             return ''
-            # pass
         return m.group()[::-1]
+
+    def _append_child(self, data):
+        children = self.temp_children[-1]
+        if children:
+            children += ', '
+        children += data
+        self.temp_children[-1] = children
 
     # Internal -- check to see if we have a complete starttag; return end
     # or -1 if incomplete.
@@ -150,7 +156,6 @@ class PyxHTMLParser(HTMLParser):
                 attrvalue = attrvalue
             else:
                 attrvalue = unescape(attrvalue)
-            print(attrvalue)
             attrs.append((attrname, attrvalue))
             k = m.end()
 
@@ -209,16 +214,19 @@ class PyxHTMLParser(HTMLParser):
         return gtpos
     
     def handle_starttag(self, tag, attrs):
+        tab = self._get_tab()
         self.tags.append(tag)
         self.tags_set.add(tag)
+        if tag == '__fragment__':
+            self.temp_text = ''
         if tag == 'python':
             attrs.append(('_locals', '{locals()}'))
-        self.temp_data.append(map_attrs(attrs, self._get_tab()))
+        self.temp_data.append(map_attrs(attrs, tab))
         if len(self.temp_children) == len(self.tags) and len(self.temp_children) > 1:
             data = self.temp_children.pop()
             self.temp_children[-1] += data
             self.temp_children.append('')
-        elif self.temp_text.strip() or not self.temp_text:
+        elif not self.temp_text.strip():
             self.temp_text = ''
             self.temp_children.append('')
         else:
@@ -249,12 +257,10 @@ class PyxHTMLParser(HTMLParser):
         self.temp_text = ''
 
     def handle_data(self, data):
+        if data.startswith('>'):
+            data = data[1:]
         if data == '<':
             return self.handle_starttag('__fragment__', {})
-            # self.data += '__fragment__(children=['
-            # return
-        if data.startswith('>'):
-            return self.handle_data(data[1:])
         if not data.strip():
             self.temp_text += data.strip()
             return
@@ -264,11 +270,11 @@ class PyxHTMLParser(HTMLParser):
                     self.temp_children.append(self.temp_text)
             if '{' in data or '}' in data:
                 if data[0] == '{' and data[-1] == '}':
-                    self.temp_text += data[1:-1]
+                    self._append_child(data[1:-1])
                 else:
-                    self.temp_text += 'f"""' + data + '"""'
+                    self._append_child('f"""' + data + '"""')
             else:
-                self.temp_text += '"""' + data + '"""'
+                self._append_child('"""' + data + '"""')
         else:
             self.data += data
 
@@ -304,6 +310,18 @@ from pyx import (  # importing extra data for pyx render
     __requests__, __fragment__, __html__, __DOM__,
 )
 %s
-tags_set = %s''' % (feed, parser.tags_set)
+tags_set = %s
+
+
+l = locals()
+for tag_name in tags_set:
+    if _tag := l.get(tag_name):
+        if tag_name[:2] == tag_name[-2:] == '__':
+            l[tag_name] = cached_tag.update(name=tag_name[2:-2])(_tag)
+        else:
+            l[tag_name] = cached_tag(_tag)
+    else:
+        l[tag_name] = Tag(name=tag_name)(div)
+''' % (feed, parser.tags_set)
 
     parse(main)

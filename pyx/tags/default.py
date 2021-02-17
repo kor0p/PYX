@@ -29,7 +29,6 @@ def python(tag, **k):
     __globals = globals().copy()
     if '_locals' in k:
         __globals.update(tag.kw.pop('_locals'))
-    # print(__locals)
     if 'src' in k:
         with open(k['src'], 'r') as src:
             code = '\n'.join('    ' + line for line in src.readlines())
@@ -70,7 +69,7 @@ def __body__(*, children=''):
 
 @cached_tag.update(name='html')
 def __html__(*, head='', children=''):
-    return __fragment__(children=[
+    return [
         __head__(children=head),
         __body__(children=children),
-    ])
+    ]

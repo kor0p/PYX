@@ -51,7 +51,6 @@ $.fn.event = function(pattern) {
 $.fn.regex = function(pattern, fn, args){
     fn = fn || $.fn.text
     return this.filter(function() {
-        console.log(arguments)
         return pattern.test(fn.apply(this, args))
     })
 }
@@ -114,7 +113,8 @@ window.__request = async function __request(event_type, el, url, params) {
     try {
         window.printRequestError() // clear error
         const res = await fetch(
-            `pyx/${el.tagName.toLowerCase()}___${event_type}___${url}?` + $.param(params),
+            `pyx/${el.tagName.toLowerCase()}___${event_type}___${url}`,
+            { method: 'POST', body: JSON.stringify(params) }
         )
         if (res.status !== 200) {
             console.log(await res.text())
@@ -127,7 +127,7 @@ window.__request = async function __request(event_type, el, url, params) {
             } = await res.json()
             $(window.__DOM__[target]).replaceWith(html)
             window.init()
-            console.log(html)
+            return true
         } catch (e) {
             console.log(e)
         }
@@ -195,6 +195,10 @@ window.__events__ = {
         if (!checkModifiers(el, event)) return
         return window.__request(el.name, el.tag, el.value, {})
     },
+    contextmenu (el, event) {
+        if (!checkModifiers(el, event)) return
+        return window.__request(el.name, el.tag, el.value, {})
+    },
     mouseover (el, event) {
         if (!checkModifiers(el, event)) return
         return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
@@ -228,16 +232,29 @@ window.__events__ = {
         return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
     },
 }
+window.__events__.click._alias_loaders = {
+    right: window.__events__.contextmenu,
+}
 
 window.makeEvents = async function makeEvents() {
     for await (const [name, loader] of Object.entries(window.__events__)) {
-        console.log(name)
         for await (const el of ALL().event(getRegExpModifiers(name))) {
             const self = $(el.tag)
-            console.log(self, name, loader, el)
             self.off(name).on(name, async function (event) {
                 return await loader.call(self, el, event)
             })
+            if (loader._alias_loaders) {
+                for (const [modifier, _alias_loader] of Object.entries(loader._alias_loaders)) {
+                    const _index = el.modifiers.indexOf('.' + modifier)
+                    if (_index !== -1) {
+                        el.modifiers.splice(_index, 1)
+                        const _name = _alias_loader.name;
+                        self.off(_name).on(_name, async function (event) {
+                            return await _alias_loader.call(self, el, event)
+                        })
+                    }
+                }
+            }
         }
     }
 }

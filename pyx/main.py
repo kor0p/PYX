@@ -83,7 +83,6 @@ class Tag(JSON):
         if is_cached:
             cached_key = self._get_cached_key(k)
             if cached := self._cached.get(cached_key):
-                # print(cached.children)
                 return cached
         if 'children' in k:
             k['children'] = ChildrenComponent(k['children'])
@@ -109,7 +108,6 @@ class Tag(JSON):
                 v = _hash
             _attrs[k] = v
         this.f.kw = this.k = _attrs
-        # print(this.name, this.children, repr(this.children))
         if is_cached:
             self._cached[cached_key] = this
         return this

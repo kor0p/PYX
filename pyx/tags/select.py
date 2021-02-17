@@ -29,7 +29,6 @@ class SelectItems:
 
 @cached_tag
 def option(*, label, **attrs):
-    # attrs['children'] = attrs.pop('value')
     return label
 
 

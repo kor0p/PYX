@@ -5,7 +5,6 @@ from ..main import cached_tag
 
 @cached_tag
 def tab(*, name, on_click):
-    # if active:
     return li(children=name)
 
 
