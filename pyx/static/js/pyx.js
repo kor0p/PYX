@@ -65,7 +65,7 @@ $.fn.withAttr = function(pattern) {
 window.printRequestError = function printRequestError(params) {
     $(window.__DOM__.error).replaceWith(params
         ? `ERROR:\n  kwargs: ${JSON.stringify(params)}`
-        : ''
+        : '<render_error/>'
     )
 }
 
@@ -125,7 +125,7 @@ window.__request = async function __request(event_type, el, url, params) {
                 target,
                 html,
             } = await res.json()
-            $(window.__DOM__[target]).replaceWith(html)
+            window.__DOM__[target].innerHTML = $(html)[0].innerHTML
             window.init()
             return true
         } catch (e) {

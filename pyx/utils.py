@@ -48,11 +48,36 @@ class ChildrenComponent(list):
             pass
         super().__init__((args, ))
 
+    def __hash__(self):
+        return hash(tuple(self))
+
+    def __call__(self, *args, **kwargs):
+        return ChildrenComponent([
+            child(*args, **kwargs) if child else ''
+            for child in self
+        ])
+
+    def __getattr__(self, key):
+        if key in dir(self):
+            return super().__getattribute__(key)
+        return ChildrenComponent([
+            getattr(child, key, '')
+            for child in self
+        ])
+
     def __repr__(self):
         return join('', self, repr)
 
     def __str__(self):
         return join('', self)
+
+    def __add__(self, other):
+        self.append(other)
+        return self
+
+    def __radd__(self, other):
+        self.insert(0, other)
+        return self
 
 
 class JSON(dict):

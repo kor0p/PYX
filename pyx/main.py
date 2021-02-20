@@ -1,17 +1,33 @@
 import inspect
 from functools import wraps
-from typing import Union, Callable
+from typing import Union, Callable, TypeVar
 
 from .utils import call_function_get_frame, ChildrenComponent, JSON, state
 
 __requests__ = {}
 __DOM__ = {}
+T = TypeVar('T', bound='Tag')
+
+
+def get_from_dom(tag: T):
+    return __DOM__.get(str(hash(tag)))
+
+
+def set_to_dom(key_or_value, value=None):
+    if value:
+        __DOM__[str(key_or_value)] = value
+    else:
+        __DOM__[str(hash(key_or_value))] = key_or_value
+
+
+class ClassComponent:
+    __render__: Callable
 
 
 class Tag(JSON):
     f = None
-    k = {}
-    children = ''
+    kw = {}
+    children: Union[ChildrenComponent[str, ClassComponent]] = ''
     _cached = {}
 
     def __len__(self):
@@ -28,12 +44,14 @@ class Tag(JSON):
     def name(self, name):
         self._options['name'] = name
 
-    def update(self, **k):
+    def update(self, **k) -> Callable[[Callable], T]:
         cls = type(self)
 
         @wraps(cls)
         def _tag(f):
             return cls(f, **(self._options | k))
+
+        _tag.update = lambda **_k: self.update(**(k | _k))
         return _tag
 
     def __new__(cls, f=None, *, name='', cache=False, is_in_dom=True, **k):
@@ -57,7 +75,7 @@ class Tag(JSON):
         super().__init__()
 
     def __hash__(self):
-        return hash((self.name, hash(self.f)))
+        return hash((self.name, self.f, tuple(self.kw.items())))
 
     def _get_cached_key(self, kwargs: JSON):
         return (
@@ -73,74 +91,92 @@ class Tag(JSON):
             **self._options,
         )
 
-    def __call__(self, *a, **k):
+    def __call__(self, *a: tuple[Callable], **kw: dict[str, object]):
+        """
+        @Tag()
+        def custom_tag():
+            pass
+
+        cached_tag = Tag(cache=True)
+        @cached_tag.update(name='test')
+        def custom_tag(tag):
+            pass
+
+        @Tag()
+        def custom_tag():
+            pass
+        """
         if a:
             return self.update()(*a)
-        k = self.k | k
-        k = JSON(k)
+        kw = self.kw | kw
+        kw = JSON(kw)
         is_cached = self._options.get('cache')
         cached_key = None
         if is_cached:
-            cached_key = self._get_cached_key(k)
+            cached_key = self._get_cached_key(kw)
             if cached := self._cached.get(cached_key):
                 return cached
-        if 'children' in k:
-            k['children'] = ChildrenComponent(k['children'])
+        if '_class' in kw:
+            kw['class'] = kw.pop('_class')
+        if self._options.get('children_raw', False) and 'children' in kw:
+            kw['children'] = ChildrenComponent(kw['children'])
+
         this = self.clone()
-        this.f.kw = k
+        this.f.kw = this.kw = kw
         tag_arguments = inspect.getfullargspec(this.f._f)
         is_class_component = isinstance(this.f._f, type)
         if len(tag_arguments.args) == is_class_component:
-            this.children = this.f(**k)
-        elif 'tag' in k:
-            this.children = this.f(this.f, **k)
+            this.children = this.f(**kw)
+        elif 'tag' in kw:
+            this.children = this.f(this.f, **kw)
         else:
-            this.children = this.f(tag=this.f, **k)
-        # this.children = this.f(**k)
+            this.children = this.f(tag=this.f, **kw)
 
         _attrs = JSON()
-        for k, v in k.items():
-            if callable(v):
-                # k = k.lower()
+        for k, v in kw.items():
+            if callable(v) and not isinstance(v, ChildrenComponent):
                 _hash = hash(v)
-                _key = self.name + '___' + k + '___' + str(_hash)
+                _key = this.name + '___' + k + '___' + str(_hash)
                 __requests__[_key] = v
                 v = _hash
             _attrs[k] = v
-        this.f.kw = this.k = _attrs
+        this.f.kw = this.kw = _attrs
         if is_cached:
             self._cached[cached_key] = this
         return this
 
     def __repr__(self):
-        return str(self.name) + '(' + ', '.join(str(k) + '=' + str(v) for k, v in self.k.items()) + ')'
+        return str(self.name) + '(' + ', '.join(str(k) + '=' + str(v) for k, v in self.kw.items()) + ')'
 
     def __str__(self):
-        if fn := getattr(self.f, '__render__', None):
-            return str(fn(self))
         _hash = hash(self)
-        __DOM__[str(_hash)] = self
+        set_to_dom(_hash, self)
 
-        attrs = self.k.copy()
-        attrs['pyx-id'] = _hash
-        if self._options.is_in_dom:
-            attrs['pyx-dom'] = True
-        if 'children' in attrs:
-            children = attrs.pop('children')
+        if getattr(self.f, '__render__', None) is not None:
+            r = str(self.children.__render__(self))
         else:
-            children = ''
+            attrs = self.kw.copy()
+            if 'children' in attrs:
+                attrs.pop('children')
 
-        r = '<' + self.name
-        for k, v in attrs.items():
-            if v is None or v is False:
-                continue
-            if v is True:
-                r += ' ' + k
-                continue
-            r += ' ' + k + '="' + str(v) + '"'
-        r += f'>{self.children}</{self.name}>'
+            r = '<' + self.name
+            for k, v in attrs.items():
+                if v is None or v is False:
+                    continue
+                if v is True:
+                    r += ' ' + k
+                    continue
+                r += ' ' + k + '="' + str(v) + '"'
+            r += '>'
+            if not self._options.get('_void_tag', False):
+                r += f'{self.children}</{self.name}>'
+
+        r = r.replace(
+            '<' + self.name,
+            f'<{self.name} pyx-id="{_hash}" ' + ('pyx-dom ' if self._options.is_in_dom else ''),
+            1
+        )
         return r
-        # return str(self.children)
 
 
 class Component:
@@ -184,10 +220,13 @@ class Component:
         f = self._f
         if not f or not callable(f):
             return
+        return ChildrenComponent(f(*a, **k))
+        """
         frame, result = call_function_get_frame(f, *a, **k)
         self._f.frame = frame
         self._f.locals = frame.f_locals
         return ChildrenComponent(result)
+        """
 
     def __getattr__(self, key, raw=False):
         _value = None

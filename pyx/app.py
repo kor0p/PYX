@@ -1,6 +1,6 @@
 import os
 import json
-from pyx import cached_tag, render_error, Tag, div
+from pyx import cached_tag, DEFAULT_TAG, render_error, Tag, div
 from pyx import (  # importing extra data for pyx render
     __requests__,
     __html__,
@@ -11,13 +11,16 @@ __APP__ = Flask(__name__)
 tags_set = []
 
 
+def __pyx__():
+    pass
 __PYX_FILE__ = os.environ.get("__PYX__")
 exec(f'from {__PYX_FILE__} import *')
 try:
     exec(f'from {__PYX_FILE__} import __pyx__')
 except ImportError:
-    def __pyx__():
-        pass
+    pass
+
+__pyx__ = DEFAULT_TAG.update(name='pyx')(__pyx__)
 
 
 def _from_request(target, html):
