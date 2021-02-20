@@ -2,6 +2,7 @@ from .all import *
 from .select import *
 from .default import *
 from .tabs import *
+from .style import *
 
 from .default import (
     __fragment__,

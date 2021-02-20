@@ -1,392 +1,601 @@
-from .default import DEFAULT_TAG
+from .default import DEFAULT_TAG, VOID_TAG
 
 
 @DEFAULT_TAG
-def a(**k):
-    return str(k.get('children', ''))
+def abbr(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def abbr(**k):
-    return str(k.get('children', ''))
+def acronym(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def acronym(**k):
-    return str(k.get('children', ''))
+def address(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def address(**k):
-    return str(k.get('children', ''))
+def applet(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def area(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def area(**k):
-    return str(k.get('children', ''))
+def article(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def b(**k):
-    return str(k.get('children', ''))
+def aside(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def base(**k):
-    return str(k.get('children', ''))
+def audio(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def bdo(**k):
-    return str(k.get('children', ''))
+def b(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def base(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def big(**k):
-    return str(k.get('children', ''))
+def basefont(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def blockquote(**k):
-    return str(k.get('children', ''))
+def bdi(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def body(**k):
-    return str(k.get('children', ''))
+def bdo(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def br(**k):
-    return str(k.get('children', ''))
+def big(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def button(**k):
-    return str(k.get('children', ''))
+def blockquote(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def caption(**k):
-    return str(k.get('children', ''))
+def body(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def br(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def cite(**k):
-    return str(k.get('children', ''))
+def button(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def code(**k):
-    return str(k.get('children', ''))
+def canvas(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def col(**k):
-    return str(k.get('children', ''))
+def caption(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def colgroup(**k):
-    return str(k.get('children', ''))
+def center(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def dd(**k):
-    return str(k.get('children', ''))
+def cite(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def code(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def col(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def colgroup(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def data(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def datalist(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def dd(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG.update(name='del')
-def _del(**k):
-    return str(k.get('children', ''))
-locals()['del'] = _del
+def _del(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def dfn(**k):
-    return str(k.get('children', ''))
+def details(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def div(**k):
-    return str(k.get('children', ''))
+def dfn(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def dl(**k):
-    return str(k.get('children', ''))
+def dialog(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def DOCTYPE(**k):
-    return str(k.get('children', ''))
+def dir(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def dt(**k):
-    return str(k.get('children', ''))
+def div(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def em(**k):
-    return str(k.get('children', ''))
+def dl(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def fieldset(**k):
-    return str(k.get('children', ''))
+def dt(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def form(**k):
-    return str(k.get('children', ''))
+def em(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def embed(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def h1(**k):
-    return str(k.get('children', ''))
+def fieldset(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def h2(**k):
-    return str(k.get('children', ''))
+def figcaption(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def h3(**k):
-    return str(k.get('children', ''))
+def figure(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def h4(**k):
-    return str(k.get('children', ''))
+def font(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def h5(**k):
-    return str(k.get('children', ''))
+def footer(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def h6(**k):
-    return str(k.get('children', ''))
+def form(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def head(**k):
-    return str(k.get('children', ''))
+def frame(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def html(**k):
-    return str(k.get('children', ''))
+def frameset(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def hr(**k):
-    return str(k.get('children', ''))
+def h1(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def i(**k):
-    return str(k.get('children', ''))
+def h2(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def img(**k):
-    return str(k.get('children', ''))
+def h3(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def input(**k):
-    return str(k.get('children', ''))
+def h4(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def ins(**k):
-    return str(k.get('children', ''))
+def h5(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def kbd(**k):
-    return str(k.get('children', ''))
+def h6(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def label(**k):
-    return str(k.get('children', ''))
+def head(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def legend(**k):
-    return str(k.get('children', ''))
+def header(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def hr(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def li(**k):
-    return str(k.get('children', ''))
+def html(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def link(**k):
-    return str(k.get('children', ''))
+def i(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def map(**k):
-    return str(k.get('children', ''))
+def iframe(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def img(children='', **k):
+    return str(children)
+
+
+@VOID_TAG.update(name='input')
+def _input(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def meta(**k):
-    return str(k.get('children', ''))
+def ins(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def noscript(**k):
-    return str(k.get('children', ''))
+def kbd(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def object(**k):
-    return str(k.get('children', ''))
+def label(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def ol(**k):
-    return str(k.get('children', ''))
+def legend(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def optgroup(**k):
-    return str(k.get('children', ''))
+def li(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def link(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def option(**k):
-    return str(k.get('children', ''))
+def main(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG.update(name='map')
+def _map(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def p(**k):
-    return str(k.get('children', ''))
+def mark(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def meta(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def param(**k):
-    return str(k.get('children', ''))
+def meter(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def pre(**k):
-    return str(k.get('children', ''))
+def nav(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def q(**k):
-    return str(k.get('children', ''))
+def noframes(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def samp(**k):
-    return str(k.get('children', ''))
+def noscript(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def script(**k):
-    return str(k.get('children', ''))
+def object(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def select(**k):
-    return str(k.get('children', ''))
+def ol(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def small(**k):
-    return str(k.get('children', ''))
+def optgroup(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def span(**k):
-    return str(k.get('children', ''))
+def option(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def strong(**k):
-    return str(k.get('children', ''))
+def output(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def style(**k):
-    return str(k.get('children', ''))
+def p(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def param(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def sub(**k):
-    return str(k.get('children', ''))
+def picture(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def sup(**k):
-    return str(k.get('children', ''))
+def pre(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def table(**k):
-    return str(k.get('children', ''))
+def progress(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def tbody(**k):
-    return str(k.get('children', ''))
+def q(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def td(**k):
-    return str(k.get('children', ''))
+def rp(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def textarea(**k):
-    return str(k.get('children', ''))
+def rt(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def tfoot(**k):
-    return str(k.get('children', ''))
+def ruby(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def th(**k):
-    return str(k.get('children', ''))
+def s(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def thead(**k):
-    return str(k.get('children', ''))
+def samp(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def title(**k):
-    return str(k.get('children', ''))
+def script(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def tr(**k):
-    return str(k.get('children', ''))
+def section(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def tt(**k):
-    return str(k.get('children', ''))
+def select(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def ul(**k):
-    return str(k.get('children', ''))
+def small(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def source(children='', **k):
+    return str(children)
 
 
 @DEFAULT_TAG
-def var(**k):
-    return str(k.get('children', ''))
+def span(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def strike(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def strong(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def sub(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def summary(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def sup(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def svg(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def table(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def tbody(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def td(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def template(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def textarea(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def tfoot(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def th(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def thead(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def time(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def title(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def tr(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def track(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def tt(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def u(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def ul(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def var(children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
+def video(children='', **k):
+    return str(children)
+
+
+@VOID_TAG
+def wbr(children='', **k):
+    return str(children)

@@ -158,3 +158,6 @@ class state:
 
     def __len__(self):
         return len(self._value)
+
+
+__extra__ = JSON()
