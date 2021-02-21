@@ -20,17 +20,21 @@ def _from_request(target, html):
 
 @__APP__.route('/pyx/<name>', methods=['GET', 'POST'])
 def __pyx__requests__(name):
+    _error_status = 500
     req = __requests__.get(name)
     kw = dict(request.args) | dict(json.loads(request.data))
-    if req:
+    try:
+        if not req:
+            _error_status = 400
+            raise ConnectionError('Bad Request')
         _id = kw.pop('id')
         print(req(**kw))
-        tag_name = req.__qualname__.split('.')[0].lower()
-        if local_tag := locals().get(tag_name):
-            _id = str(hash(local_tag))
+        # tag_name = req.__qualname__.split('.')[0].lower()
+        # if local_tag := locals().get(tag_name):
+        #     _id = str(hash(local_tag))
         return _from_request(_id, __DOM__[_id]())
-    else:
-        return abort(make_response(_from_request('error', render_error(**kw)), 500))
+    except Exception as error:
+        return abort(make_response(_from_request('error', render_error(traceback=str(error), **kw)), 500))
 
 
 def run_app(*a, **k):

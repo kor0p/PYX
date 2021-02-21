@@ -4,7 +4,7 @@ from pyx import __APP__
 
 
 tags_set = []
-__pyx__ = lambda: None
+__pyx__ = lambda: ''
 __PYX_FILE__ = os.environ.get("__PYX__") or '.'
 try:
     exec(f'from {__PYX_FILE__} import *')

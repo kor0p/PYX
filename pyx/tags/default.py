@@ -61,8 +61,8 @@ def __python__():
 
 
 @DEFAULT_TAG
-def render_error(*a, **k):
-    return f'ERROR:\n  args: {a}\n  kwargs: {k}'
+def render_error(traceback, **k):
+    return f'ERROR:\n  traceback: {traceback}\n  kwargs: {k}'
 
 
 @DEFAULT_TAG

@@ -62,11 +62,8 @@ $.fn.withAttr = function(pattern) {
     })
 }
 
-window.printRequestError = function printRequestError(params) {
-    $(window.__DOM__.error).replaceWith(params
-        ? `ERROR:\n  kwargs: ${JSON.stringify(params)}`
-        : '<render_error/>'
-    )
+window.printRequestError = function printRequestError(content) {
+    $(window.__DOM__.error).replaceWith(content ? content.html : '<render_error/>')
 }
 
 window.getPyxId = function getPyxId (el) {
@@ -117,8 +114,9 @@ window.__request = async function __request(event_type, el, url, params) {
             { method: 'POST', body: JSON.stringify(params) }
         )
         if (res.status !== 200) {
-            console.log(await res.text())
-            return window.printRequestError(params)
+            const error = await res.json()
+            console.log(error)
+            return window.printRequestError(error)
         }
         try {
             const {
@@ -133,7 +131,7 @@ window.__request = async function __request(event_type, el, url, params) {
         }
     } catch (e) {
         console.log(e)
-        window.printRequestError(params)
+        window.printRequestError(e)
     }
 }
 
