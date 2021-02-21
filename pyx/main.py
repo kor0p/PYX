@@ -118,7 +118,7 @@ class Tag(JSON):
                 return cached
         if '_class' in kw:
             kw['class'] = kw.pop('_class')
-        if self._options.get('children_raw', False) and 'children' in kw:
+        if 'children' in kw and self._options.get('children_raw', False):
             kw['children'] = ChildrenComponent(kw['children'])
 
         this = self.clone()

@@ -31,7 +31,7 @@ DEFAULT_BODY = '''
 __extra__.js = ''
 __extra__.body = ''
 
-DEFAULT_TAG = cached_tag.update(is_in_dom=False)
+DEFAULT_TAG = cached_tag.update(is_in_dom=False, children_raw=True)
 VOID_TAG = DEFAULT_TAG.update(_void_tag=True)
 
 
