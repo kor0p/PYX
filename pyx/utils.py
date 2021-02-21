@@ -37,7 +37,7 @@ def join(sep, iterable, mapper: Callable[[object], str] = str, except_values=(No
 
 class ChildrenComponent(list):
     def __init__(self, args: Optional[list] = None):
-        if args is None or args is False:
+        if not args:
             super().__init__()
             return
         try:
@@ -49,7 +49,7 @@ class ChildrenComponent(list):
         super().__init__((args, ))
 
     def __hash__(self):
-        return hash(tuple(self))
+        return hash(tuple(self or ()))
 
     def __call__(self, *args, **kwargs):
         return ChildrenComponent([
@@ -70,6 +70,13 @@ class ChildrenComponent(list):
 
     def __str__(self):
         return join('', self)
+
+    def __iter__(self):
+        r = super().__iter__()
+        return r
+
+    def __bool__(self):
+        return len(self) > 0
 
     def __add__(self, other):
         self.append(other)

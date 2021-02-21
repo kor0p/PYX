@@ -1,26 +1,34 @@
 from .all import li, ul, div
-from ..utils import state
+from ..utils import state, ChildrenComponent
 from ..main import cached_tag
+from .default import DEFAULT_TAG
 
 
 @cached_tag
-def tab(*, name, on_click):
+def tab(*, name, children, on_click=None):
     return li(children=name)
 
 
-@cached_tag
-def tabs(tag, selected=0, children=()):
+@DEFAULT_TAG.update(is_in_dom=True)
+def tabs(tag, selected=None, children=()):
+    if selected is None and children:
+        selected = children[0].kw.name
     tag.selected = state(selected)
+    print(tag.selected)
 
-    for index, child in enumerate(children):
-        child.kw.active = tag.selected == child.name
-        child.kw.on_click = lambda i=index: set_selected(i)
+    for child in children:
+        child.kw.active = tag.selected == child.kw.name
+        child.kw.on_click = lambda tab=child: set_selected(tab)
 
-    def set_selected(index):
-        tag.selected = index
+    def set_selected(tab):
+        tag.selected = tab.kw.name
         return 'selected: ' + str(tag.selected)
 
     return div(children=[
         ul(children=children),
-        div(children=children and children[tag.selected].get('content'))
+        div(children=ChildrenComponent([
+            child.kw.get('children')
+            for child in children
+            if not isinstance(child, str) and child.kw.active
+        ]))
     ])

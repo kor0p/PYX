@@ -91,6 +91,19 @@ class Tag(JSON):
             **self._options,
         )
 
+    def _update_attrs(self):
+        _attrs = JSON()
+        for k, v in self.kw.items():
+            if callable(v) and not (
+                isinstance(v, ChildrenComponent) or hasattr(v, '__render__')
+            ):
+                _hash = hash(v)
+                _key = self.name + '___' + k + '___' + str(_hash)
+                __requests__[_key] = v
+                v = _hash
+            _attrs[k] = v
+        self.f.kw = self.kw = _attrs
+
     def __call__(self, *a: tuple[Callable], **kw: dict[str, object]):
         """
         @Tag()
@@ -118,8 +131,11 @@ class Tag(JSON):
                 return cached
         if '_class' in kw:
             kw['class'] = kw.pop('_class')
-        if 'children' in kw and self._options.get('children_raw', False):
-            kw['children'] = ChildrenComponent(kw['children'])
+        if ('children' in kw
+            and self._options.get('children_raw', False)
+            and not isinstance(_children := kw.children, ChildrenComponent)
+        ):
+            kw['children'] = ChildrenComponent(_children)
 
         this = self.clone()
         this.f.kw = this.kw = kw
@@ -132,15 +148,7 @@ class Tag(JSON):
         else:
             this.children = this.f(tag=this.f, **kw)
 
-        _attrs = JSON()
-        for k, v in kw.items():
-            if callable(v) and not isinstance(v, ChildrenComponent):
-                _hash = hash(v)
-                _key = this.name + '___' + k + '___' + str(_hash)
-                __requests__[_key] = v
-                v = _hash
-            _attrs[k] = v
-        this.f.kw = this.kw = _attrs
+        this._update_attrs()
         if is_cached:
             self._cached[cached_key] = this
         return this
@@ -151,6 +159,7 @@ class Tag(JSON):
     def __str__(self):
         _hash = hash(self)
         set_to_dom(_hash, self)
+        self._update_attrs()
 
         if getattr(self.f, '__render__', None) is not None:
             r = str(self.children.__render__(self))
@@ -173,7 +182,7 @@ class Tag(JSON):
 
         r = r.replace(
             '<' + self.name,
-            f'<{self.name} pyx-id="{_hash}" ' + ('pyx-dom ' if self._options.is_in_dom else ''),
+            f'<{self.name} ' + (f'pyx-id="{_hash}" pyx-dom ' if self._options.is_in_dom else ''),
             1
         )
         return r
