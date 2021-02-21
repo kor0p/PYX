@@ -29,33 +29,76 @@ will render
 ### and
 ```python
 # tests/test_2.py
-from pyx import cached_tag, button, state
+from pyx import cached_tag, state, button, style, br, div
 
 @cached_tag.update(name='div')
 def func(tag):
     tag.count = state(0)
     def increment():
         tag.count += 1
-    return button(on_click=increment, children="++")
+    def decrement():
+        tag.count -= 1
+    return [
+        div(_class='text', children=f'Count: {tag.count}'),
+        br(),
+        button(_class='button', on_click=increment, children="++"),
+        br(),
+        button(_class='button', on_click=decrement, children="––"),
+        style(scoped=True, children='''
+            .text, .button {
+                font-size: 1rem;
+            }
+            .button {
+                background: none;
+                border: 1px solid red;
+                border-radius: .1rem;
+            }
+        ''')
+    ]
+
 
 # can be simplified as __pyx__ = func
 def __pyx__():
     """entrypoint for pyx"""
     return func()
+
 ```
 will render
 ```html
 ...
 <body>
     <pyx>
-        <div>
-            <button title="++" on_click="<fn hash>"/>
+        <div pyx-style="<random style>">
+            <div class="text">Count: -5</div>
+            <br>
+            <button on_click="<fn hash>" class="button">++</button>
+            <br>
+            <button on_click="<fn hash>" class="button">––</button>
+            <style>[pyx-style="<random style>"] .text, [pyx-style="<random style>"] .button {
+                font-size: 1rem;
+            }
+    
+            [pyx-style="<random style>"] .button {
+                background: none;
+                border: 1px solid red;
+                border-radius: .1rem;
+            }</style>
         </div>
     </pyx>
+    <error>
+        <render_error></render_error>
+        <!-- place for error from request -->
+    </error>
+    <script>
+    
+        $('[pyx-id="<tag hash>"]').parent().attr('pyx-style', '<random style>')
+    
+    </script>
+
 </body>
 ...
 ```
-## with parser .pyx
+## and with parser .pyx
 ```python
 # tests/test_3.pyx
 from pyx import Tag, state, select, p  # not necessary, really
