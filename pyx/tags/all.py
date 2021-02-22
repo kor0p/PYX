@@ -2,6 +2,11 @@ from .default import DEFAULT_TAG, VOID_TAG
 
 
 @DEFAULT_TAG
+def a(href=None, children='', **k):
+    return str(children)
+
+
+@DEFAULT_TAG
 def abbr(children='', **k):
     return str(children)
 
@@ -86,7 +91,7 @@ def br(children='', **k):
     return str(children)
 
 
-@DEFAULT_TAG
+@DEFAULT_TAG.update(is_in_dom=True)
 def button(children='', **k):
     return str(children)
 
@@ -448,11 +453,6 @@ def s(children='', **k):
 
 @DEFAULT_TAG
 def samp(children='', **k):
-    return str(children)
-
-
-@DEFAULT_TAG
-def script(children='', **k):
     return str(children)
 
 

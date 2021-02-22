@@ -234,22 +234,27 @@ window.__events__.click._alias_loaders = {
     right: window.__events__.contextmenu,
 }
 
+function toggleEvent(self, name, loader, el) {
+    return self.off(name).on(name, async function (event) {
+        const result_before = await self.trigger(`${name}::before`, { self })
+        const result_event = await loader.call(self, el, event)
+        const result_after = await self.trigger(`${name}::after`, { self })
+        return [result_before, result_event, result_after]
+    })
+}
+
 window.makeEvents = async function makeEvents() {
     for await (const [name, loader] of Object.entries(window.__events__)) {
         for await (const el of ALL().event(getRegExpModifiers(name))) {
             const self = $(el.tag)
-            self.off(name).on(name, async function (event) {
-                return await loader.call(self, el, event)
-            })
+            toggleEvent(self, name, loader, el)
             if (loader._alias_loaders) {
                 for (const [modifier, _alias_loader] of Object.entries(loader._alias_loaders)) {
                     const _index = el.modifiers.indexOf('.' + modifier)
                     if (_index !== -1) {
                         el.modifiers.splice(_index, 1)
-                        const _name = _alias_loader.name;
-                        self.off(_name).on(_name, async function (event) {
-                            return await _alias_loader.call(self, el, event)
-                        })
+                        const _name = _alias_loader.name
+                        toggleEvent(self, _name, _alias_loader, el)
                     }
                 }
             }

@@ -37,6 +37,10 @@ class Tag(JSON):
         return bool(self.f)
 
     @property
+    def init(self):
+        return self._options.get('init')
+
+    @property
     def name(self):
         return self._options.get('name')
 
@@ -54,7 +58,7 @@ class Tag(JSON):
         _tag.update = lambda **_k: self.update(**(k | _k))
         return _tag
 
-    def __new__(cls, f=None, *, name='', cache=False, is_in_dom=True, **k):
+    def __new__(cls, f=None, *, name='', cache=False, is_in_dom=True, init=True, **k):
         if isinstance(f, cls):
             return f
         self = super().__new__(cls)
@@ -63,6 +67,7 @@ class Tag(JSON):
             name=name or (f.__name__ if f else ''),
             cache=cache,
             is_in_dom=is_in_dom,
+            init=init,
             **k,
         )
 
@@ -129,7 +134,13 @@ class Tag(JSON):
             cached_key = self._get_cached_key(kw)
             if cached := self._cached.get(cached_key):
                 return cached
-        if '_class' in kw:
+
+        this = self.clone()
+        this.f.kw = this.kw = kw
+        tag_arguments = inspect.getfullargspec(this.f._f)
+        is_class_component = isinstance(this.f._f, type)
+
+        if '_class' in kw and '_class' not in tag_arguments.args:
             kw['class'] = kw.pop('_class')
         if ('children' in kw
             and self._options.get('children_raw', False)
@@ -137,10 +148,6 @@ class Tag(JSON):
         ):
             kw['children'] = ChildrenComponent(_children)
 
-        this = self.clone()
-        this.f.kw = this.kw = kw
-        tag_arguments = inspect.getfullargspec(this.f._f)
-        is_class_component = isinstance(this.f._f, type)
         if len(tag_arguments.args) == is_class_component:
             this.children = this.f(**kw)
         elif 'tag' in kw:
@@ -149,6 +156,7 @@ class Tag(JSON):
             this.children = this.f(tag=this.f, **kw)
 
         this._update_attrs()
+        this._options['init'] = False
         if is_cached:
             self._cached[cached_key] = this
         return this
@@ -156,36 +164,52 @@ class Tag(JSON):
     def __repr__(self):
         return str(self.name) + '(' + ', '.join(str(k) + '=' + str(v) for k, v in self.kw.items()) + ')'
 
+    def __render__(self, children=None):
+        """
+        @Tag()
+        class World:
+            def __init__(self, **attrs):
+                print('Init World')
+            def __render__(self, tag):
+                print('Hello World')
+                return tag.__render__()
+        """
+        if children is None:
+            children = self.children
+        attrs = self.kw.copy()
+        if 'children' in attrs:
+            attrs.pop('children')
+
+        result = '<' + self.name
+        for k, v in attrs.items():
+            if v is None or v is False:
+                continue
+            if v is True:
+                result += ' ' + k
+                continue
+            result += ' ' + k + '="' + str(v) + '"'
+        result += '>'
+        if not self._options.get('_void_tag', False):
+            result += f'{children}</{self.name}>'
+
+        return result
+
     def __str__(self):
         _hash = hash(self)
         set_to_dom(_hash, self)
         self._update_attrs()
 
         if getattr(self.f, '__render__', None) is not None:
-            r = str(self.children.__render__(self))
+            result = str(self.children.__render__(self))
         else:
-            attrs = self.kw.copy()
-            if 'children' in attrs:
-                attrs.pop('children')
+            result = self.__render__()
 
-            r = '<' + self.name
-            for k, v in attrs.items():
-                if v is None or v is False:
-                    continue
-                if v is True:
-                    r += ' ' + k
-                    continue
-                r += ' ' + k + '="' + str(v) + '"'
-            r += '>'
-            if not self._options.get('_void_tag', False):
-                r += f'{self.children}</{self.name}>'
-
-        r = r.replace(
+        result = result.replace(
             '<' + self.name,
             f'<{self.name} ' + (f'pyx-id="{_hash}" pyx-dom ' if self._options.is_in_dom else ''),
             1
         )
-        return r
+        return result
 
 
 class Component:
@@ -195,6 +219,10 @@ class Component:
     frame = None
     locals: dict = {}
     _state_cls = state
+
+    @property
+    def init(self):
+        return self.__tag__.init
 
     def __new__(cls, f):
         if isinstance(f, cls):
@@ -263,7 +291,7 @@ class Component:
         _exists_value: Union[state, object] = self.__getattr__(key, raw=True)
 
         if isinstance(value, _state_cls):
-            if isinstance(_exists_value, _state_cls):
+            if isinstance(_exists_value, _state_cls) and _exists_value.__get__() == value.__get__():
                 return
             else:
                 return self._f.__setattr__(key, value)

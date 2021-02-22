@@ -79,12 +79,14 @@ class ChildrenComponent(list):
         return len(self) > 0
 
     def __add__(self, other):
-        self.append(other)
-        return self
+        this = self.copy()
+        this.append(other)
+        return this
 
     def __radd__(self, other):
-        self.insert(0, other)
-        return self
+        this = self.copy()
+        this.insert(0, other)
+        return this
 
 
 class JSON(dict):
