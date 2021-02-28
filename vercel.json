@@ -1,0 +1,13 @@
+{
+    "version": 2,
+    "builds": [
+        { "src": "./tests/app.py", "use": "@vercel/python", "config": { "maxLambdaSize": "9mb" } },
+        { "src": "./pyx/**", "use": "@vercel/static", "config": { "maxLambdaSize": "9mb" } }
+    ],
+    "routes": [
+        { "src": "/static/(?<path>.*)", "dest": "/pyx/static/$path" },
+        { "src": "/pyx/(?<callback>.*)", "dest": "/tests/app.py" },
+        { "src": "/(?<n>\\d*)", "dest": "/tests/app.py" },
+        { "src": "/.*", "dest": "/"}
+    ]
+}

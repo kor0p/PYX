@@ -4,6 +4,7 @@ from typing import Union, Callable, TypeVar
 
 from .utils import escape, ChildrenComponent, JSON, state
 
+from .utils import merge_dicts
 __requests__ = {}
 __DOM__ = {}
 T = TypeVar('T', bound='Tag')
@@ -27,7 +28,7 @@ class ClassComponent:
 class Tag(JSON):
     f = None
     kw = {}
-    children: Union[ChildrenComponent[str, ClassComponent]] = ''
+    children: Union[ChildrenComponent] = ''
     _cached = {}
 
     def __len__(self):
@@ -53,9 +54,9 @@ class Tag(JSON):
 
         @wraps(cls)
         def _tag(f):
-            return cls(f, **(self._options | k))
+            return cls(f, **merge_dicts(self._options, k))
 
-        _tag.update = lambda **_k: self.update(**(k | _k))
+        _tag.update = lambda **_k: self.update(**merge_dicts(k, _k))
         return _tag
 
     def __new__(cls, f=None, *, name='', cache=False, is_in_dom=True, init=True, escape=True, **k):
@@ -111,7 +112,7 @@ class Tag(JSON):
             _attrs[k] = v
         self.f.kw = self.kw = _attrs
 
-    def __call__(self, *a: tuple[Callable], **kw: dict[str, object]):
+    def __call__(self, *a: [Callable], **kw: dict):
         """
         @Tag()
         def custom_tag():
@@ -128,13 +129,14 @@ class Tag(JSON):
         """
         if a:
             return self.update()(*a)
-        kw = self.kw | kw
+        kw = merge_dicts(self.kw, kw)
         kw = JSON(kw)
         is_cached = self._options.get('cache')
         cached_key = None
         if is_cached:
             cached_key = self._get_cached_key(kw)
-            if cached := self._cached.get(cached_key):
+            cached = self._cached.get(cached_key)
+            if cached:
                 return cached
 
         this = self.clone()
@@ -144,9 +146,11 @@ class Tag(JSON):
 
         if '_class' in kw and '_class' not in tag_arguments.args:
             kw['class'] = kw.pop('_class')
+
+        _children = kw.children
         if ('children' in kw
             and self._options.get('children_raw', False)
-            and not isinstance(_children := kw.children, ChildrenComponent)
+            and not isinstance(_children, ChildrenComponent)
         ):
             kw['children'] = ChildrenComponent(_children)
 
@@ -298,7 +302,7 @@ class Component:
         _exists_value: Union[state, object] = self.__getattr__(key, raw=True)
 
         if isinstance(value, _state_cls):
-            if isinstance(_exists_value, _state_cls) and _exists_value.__get__() == value.__get__():
+            if isinstance(_exists_value, _state_cls) and _exists_value.__get_init__() == value.__get__():
                 return
             else:
                 return self._f.__setattr__(key, value)

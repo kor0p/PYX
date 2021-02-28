@@ -51,6 +51,13 @@ def join(sep, iterable, mapper: Callable[[object], str] = str, except_values=(No
     ))
 
 
+def merge_dicts(d1, d2):
+    d = {}
+    d.update(d1)
+    d.update(d2)
+    return d
+
+
 class ChildrenComponent(list):
     def __init__(self, args: Optional[list] = None):
         if not args:

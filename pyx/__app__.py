@@ -1,6 +1,7 @@
 import json
 from pyx.tags import render_error, __html__
 from pyx.main import __requests__, __DOM__
+from pyx.utils import merge_dicts
 from flask import Flask, request, jsonify, abort, make_response
 
 
@@ -22,7 +23,7 @@ def _from_request(target, html):
 def __pyx__requests__(name):
     _error_status = 500
     req = __requests__.get(name)
-    kw = dict(request.args) | dict(json.loads(request.data))
+    kw = merge_dicts(dict(request.args), dict(json.loads(request.data)))
     try:
         if not req:
             _error_status = 400
