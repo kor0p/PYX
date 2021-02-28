@@ -74,7 +74,7 @@ class __fragment__:
         return self.children
 
 
-@cached_tag.update(name='head', children_raw=True)
+@cached_tag.update(name='head', children_raw=True, escape=False)
 def __head__(*, children=''):
     return DEFAULT_HEAD.format(
         extra_css=__extra__.css,
@@ -82,7 +82,7 @@ def __head__(*, children=''):
     ) + children
 
 
-@cached_tag.update(name='body', children_raw=True)
+@cached_tag.update(name='body', children_raw=True, escape=False)
 def __body__(*, children=''):
     return children + DEFAULT_BODY.format(
         extra_js=__extra__.js,

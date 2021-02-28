@@ -247,16 +247,20 @@ window.makeEvents = async function makeEvents() {
     for await (const [name, loader] of Object.entries(window.__events__)) {
         for await (const el of ALL().event(getRegExpModifiers(name))) {
             const self = $(el.tag)
-            toggleEvent(self, name, loader, el)
+            let use_custom_loaders = false
             if (loader._alias_loaders) {
                 for (const [modifier, _alias_loader] of Object.entries(loader._alias_loaders)) {
                     const _index = el.modifiers.indexOf('.' + modifier)
                     if (_index !== -1) {
+                        use_custom_loaders = true
                         el.modifiers.splice(_index, 1)
                         const _name = _alias_loader.name
                         toggleEvent(self, _name, _alias_loader, el)
                     }
                 }
+            }
+            if (!use_custom_loaders) {
+                toggleEvent(self, name, loader, el)
             }
         }
     }

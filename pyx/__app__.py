@@ -29,9 +29,6 @@ def __pyx__requests__(name):
             raise ConnectionError('Bad Request')
         _id = kw.pop('id')
         print(req(**kw))
-        # tag_name = req.__qualname__.split('.')[0].lower()
-        # if local_tag := locals().get(tag_name):
-        #     _id = str(hash(local_tag))
         return _from_request(_id, __DOM__[_id]())
     except Exception as error:
         return abort(make_response(_from_request('error', render_error(traceback=str(error), **kw)), 500))

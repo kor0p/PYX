@@ -3,6 +3,22 @@ from typing import Callable, Optional
 from functools import wraps
 
 
+def escape(s, quote=True):
+    """
+    # forked from html.escape
+    Replace special characters "&", "<" and ">" to HTML-safe sequences.
+    If the optional flag quote is true (the default), the quotation mark
+    characters, both double quote (") and single quote (') characters are also
+    translated.
+    """
+    s = s.replace("&", "&amp;")  # Must be done first!
+    s = s.replace("<", "&lt;")
+    s = s.replace(">", "&gt;")
+    if quote:
+        s = s.replace('"', "&quot;")
+        s = s.replace('\'', "&#x27;")
+    return s
+
 
 def call_function_get_frame(func, *args, **kwargs):
     """
@@ -133,20 +149,25 @@ def __wrapper__(method):
 class state:
     # MAIN STATE
 
+    _value_init = None
     _value = None
 
-
     def __init__(self, value):
-        self._value = value
+        self.__set__(value)
 
     def __get__(self):
         return self._value
 
     def __set__(self, value):
         self._value = value
+        if self._value_init is None:
+            self._value_init = value
 
     def __del__(self):
         self._value = None
+
+    def __get_init__(self):
+        return self._value_init
 
     # END MAIN STATE
 

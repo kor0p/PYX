@@ -2,7 +2,7 @@ import inspect
 from functools import wraps
 from typing import Union, Callable, TypeVar
 
-from .utils import call_function_get_frame, ChildrenComponent, JSON, state
+from .utils import escape, ChildrenComponent, JSON, state
 
 __requests__ = {}
 __DOM__ = {}
@@ -58,7 +58,7 @@ class Tag(JSON):
         _tag.update = lambda **_k: self.update(**(k | _k))
         return _tag
 
-    def __new__(cls, f=None, *, name='', cache=False, is_in_dom=True, init=True, **k):
+    def __new__(cls, f=None, *, name='', cache=False, is_in_dom=True, init=True, escape=True, **k):
         if isinstance(f, cls):
             return f
         self = super().__new__(cls)
@@ -68,6 +68,7 @@ class Tag(JSON):
             cache=cache,
             is_in_dom=is_in_dom,
             init=init,
+            escape=escape,
             **k,
         )
 
@@ -106,6 +107,7 @@ class Tag(JSON):
                 _key = self.name + '___' + k + '___' + str(_hash)
                 __requests__[_key] = v
                 v = _hash
+                self._options.is_in_dom = True  # need to get __id__ on callback
             _attrs[k] = v
         self.f.kw = self.kw = _attrs
 
@@ -176,6 +178,11 @@ class Tag(JSON):
         """
         if children is None:
             children = self.children
+        if isinstance(children, ChildrenComponent) and self._options.escape:
+            children = ChildrenComponent([
+                escape(child) if isinstance(child, str) else child
+                for child in children
+            ])
         attrs = self.kw.copy()
         if 'children' in attrs:
             attrs.pop('children')
