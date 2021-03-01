@@ -307,7 +307,7 @@ if __name__ == '__main__':
         return '''
 from pyx import *  # importing all: tag, default tags (div, select, tabs, etc.), ...
 from pyx import (  # importing extra data for pyx render
-    __requests__, __fragment__, __html__, __DOM__,
+    __fragment__,
 )
 %s
 tags_set = %s

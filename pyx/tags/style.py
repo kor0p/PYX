@@ -1,16 +1,7 @@
 import re
-import string
-import random
 
 from .default import cached_tag, __extra__
-
-
-def _get_random_name(length=10):
-    """https://stackoverflow.com/a/23728630/2213647"""
-    return ''.join(
-        random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits)
-        for _ in range(length)
-    )
+from ..utils import get_random_name
 
 
 @cached_tag.update(cache=True)
@@ -24,7 +15,7 @@ class style:
 
     def _scope_style(self, styles):
         """https://stackoverflow.com/a/32134836/8851903"""
-        style_name = _get_random_name()
+        style_name = get_random_name()
         scoped_data = f'pyx-style="{style_name}"'
         css_rules = re.findall(r'[^\{]+\{[^\}]*\}', styles, re.MULTILINE)
         return (

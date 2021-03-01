@@ -2,22 +2,10 @@ import inspect
 from functools import wraps
 from typing import Union, Callable, TypeVar
 
-from .utils import escape, ChildrenComponent, JSON, state
+from .utils import escape, ChildrenComponent, JSON, state, set_to_dom
+from .utils.app import create_request
 
-__requests__ = {}
-__DOM__ = {}
 T = TypeVar('T', bound='Tag')
-
-
-def get_from_dom(tag: T):
-    return __DOM__.get(str(hash(tag)))
-
-
-def set_to_dom(key_or_value, value=None):
-    if value:
-        __DOM__[str(key_or_value)] = value
-    else:
-        __DOM__[str(hash(key_or_value))] = key_or_value
 
 
 class ClassComponent:
@@ -105,7 +93,7 @@ class Tag(JSON):
             ):
                 _hash = hash(v)
                 _key = self.name + '___' + k + '___' + str(_hash)
-                __requests__[_key] = v
+                create_request(_key, v)
                 v = _hash
                 self._options.is_in_dom = True  # need to get __id__ on callback
             _attrs[k] = v
@@ -298,7 +286,7 @@ class Component:
         _exists_value: Union[state, object] = self.__getattr__(key, raw=True)
 
         if isinstance(value, _state_cls):
-            if isinstance(_exists_value, _state_cls) and _exists_value.__get__() == value.__get__():
+            if isinstance(_exists_value, _state_cls) and _exists_value.__get_init__() == value.__get__():
                 return
             else:
                 return self._f.__setattr__(key, value)

@@ -1,7 +1,7 @@
 
 from pyx import *  # importing all: tag, default tags (div, select, tabs, etc.), ...
 from pyx import (  # importing extra data for pyx render
-    __requests__, __fragment__, __html__, __DOM__,
+    __fragment__,
 )
 from pyx import Tag, state, select, p  # not necessary, really
 
