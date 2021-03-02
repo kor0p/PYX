@@ -3,7 +3,8 @@ from functools import wraps
 from typing import Union, Callable, TypeVar
 
 from .utils import escape, ChildrenComponent, JSON, state, set_to_dom
-from .utils.app import create_request
+from .utils.app import create_request, get_cookie
+from .utils.dom import __PYX_ID__
 
 T = TypeVar('T', bound='Tag')
 
@@ -15,6 +16,7 @@ class ClassComponent:
 class Tag(JSON):
     f = None
     kw = {}
+    _hash = None
     children: Union[ChildrenComponent[str, ClassComponent]] = ''
     _cached = {}
 
@@ -93,7 +95,7 @@ class Tag(JSON):
             ):
                 _hash = hash(v)
                 _key = self.name + '___' + k + '___' + str(_hash)
-                create_request(_key, v)
+                create_request(get_cookie(__PYX_ID__), _key, v)
                 v = _hash
                 self._options.is_in_dom = True  # need to get __id__ on callback
             _attrs[k] = v
@@ -190,7 +192,10 @@ class Tag(JSON):
         return result
 
     def __str__(self):
-        _hash = hash(self)
+        if self._hash:
+            _hash = self._hash
+        else:
+            _hash = self._hash = hash(self)
         set_to_dom(_hash, self)
         self._update_attrs()
 

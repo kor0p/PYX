@@ -27,15 +27,14 @@ def set_cookie(key, value, response=None, **kwargs):
     return response
 
 
-def create_request(key, value):
-    pyx_id = get_cookie('pyx-id')
-    if pyx_id not in __requests__:
-        __requests__[pyx_id] = {}
-    __requests__[pyx_id][key] = value
+def create_request(salt_id, key, value):
+    if salt_id not in __requests__:
+        __requests__[salt_id] = {}
+    __requests__[salt_id][key] = value
 
 
-def get_request(key):
-    return __requests__.get(get_cookie('pyx-id'), {}).get(key)
+def get_request(salt_id, key):
+    return __requests__.get(salt_id, {}).get(key)
 
 
 def _from_request(target, html):
@@ -49,7 +48,7 @@ def handle_requests(app, request_prefix, on_error, rerender):
     @app.route(request_prefix + '/<name>', methods=['GET', 'POST'])
     def __pyx__requests__(name):
         _error_status = 500
-        req = get_request(name)
+        req = get_request(get_cookie(app.__PYX_ID__), name)
         kw = dict(request.args) | dict(loads(request.data))
         try:
             if not req:
