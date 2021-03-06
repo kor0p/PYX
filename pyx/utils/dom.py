@@ -1,20 +1,30 @@
 from .rand import get_random_name
-from .app import get_cookie
+from .app import get_cookie, SessionError
 
 __sessions__ = {}
 
 __PYX_ID__ = f'__pyx_id_{get_random_name()}__'
 
 
+def get_session_id():
+    return get_cookie(__PYX_ID__)
+
+
 def get_dom():
-    dom = __sessions__.get(get_cookie(__PYX_ID__))
+    dom = __sessions__.get(get_session_id())
     if dom is None:
-        raise ConnectionError('cannot get session')
+        raise SessionError('cannot get session')
     return dom
 
 
 def set_dom(_id, dom=None):
     __sessions__[_id] = dom or {}
+
+
+def del_dom(_id=None):
+    _id = _id or get_session_id()
+    if _id in __sessions__:
+        del __sessions__[_id]
 
 
 def get_from_dom(tag):

@@ -1,10 +1,10 @@
 import inspect
 from functools import wraps
 from typing import Union, Callable, TypeVar
+from types import ModuleType
 
-from .utils import escape, ChildrenComponent, JSON, state, set_to_dom
-from .utils.app import create_request, get_cookie
-from .utils.dom import __PYX_ID__
+from .utils import escape, ChildrenComponent, JSON, state, set_to_dom, get_session_id
+from .utils.app import create_request
 
 T = TypeVar('T', bound='Tag')
 
@@ -13,10 +13,15 @@ class ClassComponent:
     __render__: Callable
 
 
+class PYXModule(ModuleType):
+    __pyx__: Callable
+
+
 class Tag(JSON):
     f = None
     kw = {}
-    _hash = None
+    hash = None
+    session = None
     children: Union[ChildrenComponent[str, ClassComponent]] = ''
     _cached = {}
 
@@ -28,6 +33,12 @@ class Tag(JSON):
 
     @property
     def init(self):
+        """
+        def pyx(tag):
+            if tag.init:
+                print('inited')
+            return ''
+        """
         return self._options.get('init')
 
     @property
@@ -64,6 +75,10 @@ class Tag(JSON):
 
         self.f = Component(f)
         self.f.__tag__ = self
+        try:
+            self.session = get_session_id()
+        except RuntimeError:
+            pass
 
         return self
 
@@ -83,7 +98,7 @@ class Tag(JSON):
     def clone(self):
         cls = type(self)
         return cls(
-            self.f,
+            self.f.clone(self.session == get_session_id()),
             **self._options,
         )
 
@@ -95,7 +110,7 @@ class Tag(JSON):
             ):
                 _hash = hash(v)
                 _key = self.name + '___' + k + '___' + str(_hash)
-                create_request(get_cookie(__PYX_ID__), _key, v)
+                create_request(get_session_id(), _key, v)
                 v = _hash
                 self._options.is_in_dom = True  # need to get __id__ on callback
             _attrs[k] = v
@@ -192,11 +207,12 @@ class Tag(JSON):
         return result
 
     def __str__(self):
-        if self._hash:
-            _hash = self._hash
-        else:
-            _hash = self._hash = hash(self)
-        set_to_dom(_hash, self)
+        _hash = self.hash
+        if not _hash:
+            _hash = self.hash = hash(self)
+        _is_in_dom = self._options.is_in_dom
+        if _is_in_dom:
+            set_to_dom(_hash, self)
         self._update_attrs()
 
         if getattr(self.f, '__render__', None) is not None:
@@ -206,7 +222,7 @@ class Tag(JSON):
 
         result = result.replace(
             '<' + self.name,
-            f'<{self.name} ' + (f'pyx-id="{_hash}" pyx-dom ' if self._options.is_in_dom else ''),
+            f'<{self.name}' + (f' pyx-id="{_hash}" pyx-dom ' if _is_in_dom else ''),
             1
         )
         return result
@@ -216,13 +232,34 @@ class Component:
     _f: Callable = None
     __tag__: Tag = None
     kw: JSON = JSON()
+    _states: JSON = JSON()
     frame = None
     locals: dict = {}
-    _state_cls = state
+    _state_cls: type = state
 
     @property
     def init(self):
         return self.__tag__.init
+
+    def _get(self, key):
+        return self._states[key]
+
+    def _set(self, key, value):
+        self._states[key] = value
+
+    def _del(self, key):
+        del self._states[key]
+
+    def clone(self, deep=False):
+        cls = type(self)
+
+        this = cls(self._f)
+        this.kw = self.kw
+        this._state_cls = self._state_cls
+        if deep:
+            this._states = self._states
+
+        return this
 
     def __new__(cls, f):
         if isinstance(f, cls):
@@ -230,9 +267,10 @@ class Component:
         self = super().__new__(cls)
 
         if f and hasattr(f, '__globals__'):
-            f.__globals__.update(dict(self=self))
+            f.__globals__.setdefault('self', self)
         self._f = f
         self.kw = JSON()
+        self._states = JSON()
 
         return self
 
@@ -267,7 +305,9 @@ class Component:
 
     def __getattr__(self, key, raw=False):
         _value = None
-        if key in dir(self._f):
+        if key in self._states:
+            _value = self._get(key)
+        elif key in dir(self._f):
             _value = getattr(self._f, key, _value)
         else:
             try:
@@ -294,12 +334,12 @@ class Component:
             if isinstance(_exists_value, _state_cls) and _exists_value.__get_init__() == value.__get__():
                 return
             else:
-                return self._f.__setattr__(key, value)
+                return self._set(key, value)
         else:
             if isinstance(_exists_value, _state_cls):
                 return _exists_value.__set__(value)
             else:
-                return self._f.__setattr__(key, value)
+                return super().__setattr__(key, value)
 
     def __delattr__(self, key):
         if key in dir(self):
@@ -310,7 +350,7 @@ class Component:
         if isinstance(_exists_value, self._state_cls):
             return _exists_value.__del__()
         else:
-            return self._f.__delattr__(key)
+            return super().__delattr__(key)
 
 
 # cached_tag = Tag(cache=True)

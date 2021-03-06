@@ -6,6 +6,15 @@ APP = TypeVar('APP')
 
 __APP__ = os.environ.get('__APP__', 'flask')
 
+
+class SessionError(ConnectionError):
+    pass
+
+
+class RequestError(ConnectionError):
+    pass
+
+
 create_app:      Callable[[str], APP]
 get_cookies:     Callable[[], Optional[dict[str, str]]]
 get_cookie:      Callable[[str, Optional[str]], str]
