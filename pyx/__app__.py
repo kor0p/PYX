@@ -3,8 +3,14 @@ from datetime import datetime
 
 from pyx.tags import render_error, __html__
 from pyx.utils.dom import set_dom, get_from_dom, __PYX_ID__, get_session_id, del_dom
-from pyx.utils.app import create_app, get_cookies, set_cookie, make_response, handle_requests
-from pyx.utils import get_random_name, join
+from pyx.utils.app import (
+    create_app,
+    get_cookies,
+    set_cookie,
+    make_response,
+    handle_requests,
+)
+from pyx.utils import get_random_name
 from pyx.main import Tag, PYXModule
 
 
@@ -15,7 +21,9 @@ __APP__._get_session_id = get_session_id
 
 def render(body: Union[Tag, PYXModule]):
     cookies = get_cookies()
-    _ids_to_remove = [name for name in cookies.keys() if '__pyx_id' in name and __PYX_ID__ != name]
+    _ids_to_remove = [
+        name for name in cookies.keys() if '__pyx_id' in name and __PYX_ID__ != name
+    ]
     exists = get_session_id() is not None
     pyx_id = None
     if not exists:
@@ -34,7 +42,9 @@ def render(body: Union[Tag, PYXModule]):
         del_dom(_id)
         set_cookie(_id, '', response, expires=0)
     if not exists:
-        set_cookie(__PYX_ID__, pyx_id, response, expires=datetime.strptime('2100', '%Y'))
+        set_cookie(
+            __PYX_ID__, pyx_id, response, expires=datetime.strptime('2100', '%Y')
+        )
     return response
 
 
@@ -42,11 +52,12 @@ handle_requests(
     __APP__,
     '/pyx',
     lambda r, kw: render_error(traceback=r, session=__PYX_ID__, **kw),
-    lambda _id: get_from_dom(_id)()
+    lambda _id: get_from_dom(_id)(),
 )
 
 
 def run_app(*a, **k):
     return __APP__.run(*a, **(k or dict(debug=True)))
+
 
 # TODO: add FastAPI app
