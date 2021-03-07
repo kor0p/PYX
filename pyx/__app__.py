@@ -49,7 +49,6 @@ def render(body: Union[Tag, PYXModule]):
 
 
 handle_requests(
-    __APP__,
     '/pyx',
     lambda r, kw: render_error(traceback=r, session=__PYX_ID__, **kw),
     lambda _id: get_from_dom(_id)(),

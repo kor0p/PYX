@@ -4,6 +4,8 @@ from flask.json import loads
 __cookies__ = {}
 __requests__ = {}
 
+_app: Flask = None
+
 
 class SessionError(ConnectionError):
     pass
@@ -13,8 +15,10 @@ class RequestError(ConnectionError):
     pass
 
 
-def create_app(name='<pyx>'):
-    return Flask(name)
+def create_app(name='<pyx>', **kwargs):
+    global _app
+    _app = Flask(name, **kwargs)
+    return _app
 
 
 def get_cookies():
@@ -48,22 +52,19 @@ def get_request(salt_id, key):
 
 
 def _from_request(target, html):
-    return jsonify(dict(
-        target=target,
-        html=str(html)
-    ))
+    return jsonify(dict(target=target, html=str(html)))
 
 
-def handle_requests(app, request_prefix, on_error, rerender):
-    @app.route(request_prefix + '/<name>', methods=['GET', 'POST'])
+def handle_requests(request_prefix, on_error, rerender):
+    @_app.route(request_prefix + '/<name>', methods=['GET', 'POST'])
     def __pyx__requests__(name):
         _error_status = 500
         kw = dict(request.args) | dict(loads(request.data))
         try:
             try:
-                req = get_request(app._get_session_id(), name)
+                req = get_request(_app._get_session_id(), name)
             except SessionError:
-                raise SessionError(app.__PYX_ID__)
+                raise SessionError(_app.__PYX_ID__)
             if not req:
                 _error_status = 400
                 raise RequestError('Bad Request')
@@ -71,4 +72,19 @@ def handle_requests(app, request_prefix, on_error, rerender):
             print(req(**kw))
             return _from_request(_id, rerender(_id))
         except Exception as error:
-            return abort(make_response(_from_request('error', on_error(str(error), kw)), _error_status))
+            return abort(
+                make_response(
+                    _from_request('error', on_error(str(error), kw)), _error_status
+                )
+            )
+
+    return __pyx__requests__
+
+
+def __index__(func):
+    rules = dict((r.rule, r.endpoint) for r in _app.url_map.iter_rules())
+
+    if '/' not in rules:
+        _app.route('/')(func)
+    else:
+        print(f'index route exists, using {rules["/"]} endpoint')
