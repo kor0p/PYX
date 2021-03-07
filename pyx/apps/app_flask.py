@@ -1,3 +1,6 @@
+from os import path
+from pathlib import Path
+
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
 
@@ -17,6 +20,10 @@ class RequestError(ConnectionError):
 
 def create_app(name='<pyx>', **kwargs):
     global _app
+    kwargs['static_folder'] = str(
+        (Path(path.abspath(__file__)) / '../../static').resolve()
+    )
+    kwargs['static_url_path'] = '/pyx/static'
     _app = Flask(name, **kwargs)
     return _app
 

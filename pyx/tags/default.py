@@ -6,9 +6,9 @@ from ..main import cached_tag, Component, Tag
 
 DEFAULT_HEAD = '''
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="/static/js/pyx.js"></script>
-<script type="text/typescript" src="/static/js/test.ts"></script>
-<link type="text/css" rel="stylesheet" href="/static/css/pyx.css"/>
+<script type="text/javascript" src="/pyx/static/js/pyx.js"></script>
+<script type="text/typescript" src="/pyx/static/js/test.ts"></script>
+<link type="text/css" rel="stylesheet" href="/pyx/static/css/pyx.css"/>
 <style>
     {extra_css}
 </style>
@@ -53,10 +53,14 @@ def python(tag, **k):
         children = str(k.get('children', ''))
         tabs = re.search('\n?(?P<spaces> *)', children).group('spaces')
         code = re.sub('^' + tabs, '    ', children, flags=re.MULTILINE)
-    exec(f'''
+    exec(
+        f'''
 def __python__():
 {code}
-''', __globals, __locals)
+''',
+        __globals,
+        __locals,
+    )
     return __locals['__python__']()
 
 
@@ -76,17 +80,16 @@ class __fragment__:
 
 @cached_tag.update(name='head', children_raw=True, escape=False)
 def __head__(*, children=''):
-    return DEFAULT_HEAD.format(
-        extra_css=__extra__.css,
-        extra_head=__extra__.head,
-    ) + children
+    return (
+        DEFAULT_HEAD.format(extra_css=__extra__.css, extra_head=__extra__.head,)
+        + children
+    )
 
 
 @cached_tag.update(name='body', children_raw=True, escape=False)
 def __body__(*, children=''):
     return children + DEFAULT_BODY.format(
-        extra_js=__extra__.js,
-        extra_body=__extra__.body,
+        extra_js=__extra__.js, extra_body=__extra__.body,
     )
 
 
