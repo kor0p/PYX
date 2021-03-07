@@ -19,7 +19,7 @@ __APP__.__PYX_ID__ = __PYX_ID__
 __APP__._get_session_id = get_session_id
 
 
-def render(body: Union[Tag, PYXModule]):
+def render(body: Union[str, Tag, PYXModule]):
     cookies = get_cookies()
     _ids_to_remove = [
         name for name in cookies.keys() if '__pyx_id' in name and __PYX_ID__ != name

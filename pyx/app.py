@@ -1,5 +1,5 @@
 import os
-from pyx import DEFAULT_TAG, render, run_app, __APP__
+from pyx import DEFAULT_TAG, render, run_app
 from pyx.utils.app import __index__
 
 
@@ -15,7 +15,7 @@ except ImportError as e:
 __pyx__ = DEFAULT_TAG.update(name='pyx')(__pyx__)
 
 
-@__index__(__APP__)
+@__index__
 def index():
     return render(__pyx__())
 

@@ -4,7 +4,7 @@ from typing import Optional, Callable, TypeVar
 Response = TypeVar('Response')
 APP = TypeVar('APP')
 
-__APP__ = os.environ.get('__APP__', 'Flask')
+__APP__ = os.environ.get('__APP__', 'FastAPI')
 
 
 class SessionError(ConnectionError):
