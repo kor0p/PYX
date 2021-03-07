@@ -142,31 +142,31 @@ will render
 ```
 ### or you can render all three at once
 ```python
-# tests/app.py
+# tests/app_flask.py
 from pyx import render, run_app, __APP__
 
-import test_1
-import test_2
-import test_3
+from tests import test_1, test_2, test_3
 
 
 @__APP__.route('/1')
 def test_1_route():
-    return render(test_1.__pyx__())
+    return render(test_1)
 
 
 @__APP__.route('/2')
 def test_2_route():
-    return render(test_2.__pyx__())
+    return render(test_2)
 
 
 @__APP__.route('/3')
 def test_3_route():
-    return render(test_3.__pyx__())
+    return render(test_3)
 
 
-run_app()
-
+if __name__ == '__main__':
+    run_app()
+else:
+    app = __APP__  # for uvicorn / vercel
 ```
 ### or merge them with tabs component
 ```python

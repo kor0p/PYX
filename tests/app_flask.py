@@ -19,6 +19,6 @@ def test_3_route():
 
 
 if __name__ == '__main__':
-    run_app()
+    run_app(name='tests.app')
 else:
-    app = __APP__  # for vercel
+    app = __APP__  # for uvicorn / vercel

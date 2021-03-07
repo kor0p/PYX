@@ -5,7 +5,8 @@ from pyx.utils.app import __index__
 
 tags_set = []
 __pyx__ = lambda: ''
-__PYX_FILE__ = os.environ.get('__PYX__') or '.'
+DEBUG = os.environ.get('DEBUG', False)
+__PYX_FILE__ = os.environ.get('__PYX__', '.')
 try:
     exec(f'from {__PYX_FILE__} import *')
     exec(f'from {__PYX_FILE__} import __pyx__')
@@ -20,4 +21,4 @@ def index():
     return render(__pyx__())
 
 
-run_app()
+run_app(name=__PYX_FILE__, debug=DEBUG)

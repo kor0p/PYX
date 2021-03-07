@@ -56,6 +56,7 @@ handle_requests(
 
 
 def run_app(*a, **k):
+    k.setdefault('port', 5000)
     return __APP__.run(*a, **(k or dict(debug=True)))
 
 
