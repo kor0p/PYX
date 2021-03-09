@@ -119,9 +119,24 @@ def handle_requests(request_prefix, on_error, rerender):
 
 
 def __index__(func):
-    rules = dict((r.path, r.endpoint) for r in app.routes)
+    rules = dict((r.path, r.endpoint) for r in _app.routes)
 
     if '/' not in rules:
         _app.get('/')(_app.post('/')(func))
     else:
         print(f'index route exists, using {rules["/"]} endpoint')
+
+
+__all__ = [
+    'SessionError',
+    'RequestError',
+    'create_app',
+    'get_cookies',
+    'get_cookie',
+    'set_cookie',
+    'create_request',
+    'get_request',
+    'handle_requests',
+    '__index__',
+    'make_response',
+]
