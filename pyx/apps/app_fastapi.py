@@ -19,7 +19,16 @@ _app: Optional[FastAPI] = None
 
 class HashableRequest(Request):
     def __hash__(self):
-        return hash(tuple(self.scope.items()))
+        result = []
+        for i, k in self.scope.items():
+            try:
+                if isinstance(k, dict):
+                    result.append((i, tuple(k.items())))
+                else:
+                    result.append((i, tuple(k)))
+            except:
+                pass
+        return hash(tuple(result))
 
 
 request: Request = HashableRequest({'type': 'http', 'headers': ''})
@@ -96,7 +105,7 @@ def handle_requests(request_prefix, on_error, rerender):
     @_app.post(request_prefix + '/{name}')
     async def __pyx__requests__(__request__: Request, name: str):
         global request
-        request = __request__
+        request = HashableRequest(__request__)
         _error_status = 500
         kw = dict(__request__.query_params) | dict(loads(await __request__.body()))
         try:
