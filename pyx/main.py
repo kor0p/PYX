@@ -323,12 +323,6 @@ class Component:
         if not f or not callable(f):
             return
         return ChildrenComponent(f(*a, **k))
-        """
-        frame, result = call_function_get_frame(f, *a, **k)
-        self._f.frame = frame
-        self._f.locals = frame.f_locals
-        return ChildrenComponent(result)
-        """
 
     def __getattr__(self, key, raw=False):
         _value = None
@@ -380,6 +374,5 @@ class Component:
             return super().__delattr__(key)
 
 
-# cached_tag = Tag(cache=True)
-cached_tag = Tag(cache=False)
+cached_tag = Tag(cache=True)
 

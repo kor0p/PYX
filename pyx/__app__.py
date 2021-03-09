@@ -32,7 +32,9 @@ def render(body: Union[str, Tag, PYXModule]):
         set_dom(pyx_id)
 
     if not isinstance(body, Tag):
-        body = body.__pyx__()
+        body = body.__pyx__
+    if callable(body):
+        body = body()
     result = str(__html__(children=body))
     if exists and not _ids_to_remove:
         return result

@@ -119,7 +119,7 @@ def handle_requests(request_prefix, on_error, rerender):
 
 
 def __index__(func):
-    rules = dict((r.path, r.endpoint) for r in _app.routes)
+    rules = dict((r.path, r.endpoint) for r in _app.routes if hasattr(r, 'endpoint'))
 
     if '/' not in rules:
         _app.get('/')(_app.post('/')(func))

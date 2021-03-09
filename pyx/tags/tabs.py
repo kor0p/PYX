@@ -1,5 +1,5 @@
 from .all import li, ul, div, a
-from ..utils import state, ChildrenComponent, __extra__
+from ..utils import state, ChildrenComponent
 from ..main import cached_tag
 from .default import DEFAULT_TAG
 from .script import script
@@ -12,7 +12,7 @@ def tab(*, name, children, on_click=None, url=None, href=None):
     ))
 
 
-@DEFAULT_TAG.update(is_in_dom=True)
+@DEFAULT_TAG.update(is_in_dom=True, escape=False)
 def tabs(tag, selected=None, children=(), _class=''):
     if selected is None and children:
         selected = children[0].kw.name

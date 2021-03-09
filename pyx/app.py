@@ -18,7 +18,8 @@ __pyx__ = DEFAULT_TAG.update(title='pyx')(__pyx__)
 
 @__index__
 def index():
-    return render(__pyx__())
+    return render(__pyx__)
 
 
-run_app(name=__PYX_FILE__, debug=DEBUG)
+if __name__ == '__main__':
+    run_app(name=__PYX_FILE__, debug=DEBUG)
