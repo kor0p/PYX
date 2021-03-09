@@ -1,6 +1,6 @@
 from pyx import cached_tag, state, button, style, br, div
 
-@cached_tag.update(name='div')
+@cached_tag.update(title='div')
 def func(tag):
     tag.count = state(0)
     def increment():

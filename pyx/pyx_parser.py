@@ -317,7 +317,7 @@ l = locals()
 for tag_name in tags_set:
     if _tag := l.get(tag_name):
         if tag_name[:2] == tag_name[-2:] == '__':
-            l[tag_name] = cached_tag.update(name=tag_name[2:-2])(_tag)
+            l[tag_name] = cached_tag.update(title=tag_name[2:-2])(_tag)
         else:
             l[tag_name] = cached_tag(_tag)
     else:

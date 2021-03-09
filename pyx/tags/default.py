@@ -35,7 +35,7 @@ DEFAULT_TAG = cached_tag.update(is_in_dom=False, children_raw=True)
 VOID_TAG = DEFAULT_TAG.update(_void_tag=True)
 
 
-@DEFAULT_TAG.update(name='input')
+@DEFAULT_TAG.update(title='input')
 def inp(**k):
     return
 
@@ -78,7 +78,7 @@ class __fragment__:
         return self.children
 
 
-@cached_tag.update(name='head', children_raw=True, escape=False)
+@cached_tag.update(title='head', children_raw=True, escape=False)
 def __head__(*, children=''):
     return (
         DEFAULT_HEAD.format(extra_css=__extra__.css, extra_head=__extra__.head,)
@@ -86,14 +86,14 @@ def __head__(*, children=''):
     )
 
 
-@cached_tag.update(name='body', children_raw=True, escape=False)
+@cached_tag.update(title='body', children_raw=True, escape=False)
 def __body__(*, children=''):
     return children + DEFAULT_BODY.format(
         extra_js=__extra__.js, extra_body=__extra__.body,
     )
 
 
-@cached_tag.update(name='html', children_raw=True)
+@cached_tag.update(title='html', children_raw=True)
 def __html__(*, head='', children=''):
     __extra__.css = ''
     __extra__.head = ''

@@ -17,19 +17,27 @@ class PYXModule(ModuleType):
     __pyx__: Callable
 
 
-class Tag(JSON):
+class Tag:
     f = None
     kw = {}
     hash = None
     session = None
     children: Union[ChildrenComponent[str, ClassComponent]] = ''
     _cached = {}
+    _options: JSON = JSON()
+    __name__ = None  # uses for class components
 
     def __len__(self):
         return 0
 
     def __bool__(self):
         return bool(self.f)
+
+    def extend(self, **options):
+        return dict(metaclass=MetaTag) | self._options | options
+
+    def __add__(self, other):
+        return ChildrenComponent([self, other])
 
     @property
     def init(self):
@@ -43,11 +51,11 @@ class Tag(JSON):
 
     @property
     def name(self):
-        return self._options.get('name')
+        return self.__name__ or self._options.get('title')
 
     @name.setter
     def name(self, name):
-        self._options['name'] = name
+        self._options['title'] = name
 
     def update(self, **k) -> Callable[[Callable], T]:
         cls = type(self)
@@ -59,19 +67,20 @@ class Tag(JSON):
         _tag.update = lambda **_k: self.update(**(k | _k))
         return _tag
 
-    def __new__(cls, f=None, *, name='', cache=False, is_in_dom=True, init=True, escape=True, **k):
+    def __new__(cls, f=None, *, title='', cache=False, is_in_dom=True, init=True, escape=True, **k):
         if isinstance(f, cls):
             return f
         self = super().__new__(cls)
 
-        self._options = JSON(
-            name=name or (f.__name__ if f else ''),
+        self._options = self._options | JSON(
             cache=cache,
             is_in_dom=is_in_dom,
             init=init,
             escape=escape,
             **k,
         )
+
+        self.name = title or (f.__name__ if f else '')
 
         self.f = Component(f)
         self.f.__tag__ = self
@@ -123,7 +132,7 @@ class Tag(JSON):
             pass
 
         cached_tag = Tag(cache=True)
-        @cached_tag.update(name='test')
+        @cached_tag.update(title='test')
         def custom_tag(tag):
             pass
 
@@ -226,6 +235,24 @@ class Tag(JSON):
             1
         )
         return result
+
+
+class MetaTag(type):
+    """
+    Allows to inherit Tag with updated options
+
+    >>> cached_tag = Tag(cache=True)
+    >>> class MyApp(**cached_tag.extend()): pass
+    >>> assert MyApp._options.cache == True
+
+    >>> class MyApp(**cached_tag.extend(cache=False)): pass
+    >>> assert MyApp._options.cache == False
+    """
+    def __new__(cls, name, bases, dct, **k):
+        bases = (Tag, *bases)
+        self = super().__new__(cls, name, bases, dct)
+        self._options = JSON(k)
+        return self
 
 
 class Component:

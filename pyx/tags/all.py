@@ -146,7 +146,7 @@ def dd(children='', **k):
     return str(children)
 
 
-@DEFAULT_TAG.update(name='del')
+@DEFAULT_TAG.update(title='del')
 def _del(children='', **k):
     return str(children)
 
@@ -301,7 +301,7 @@ def img(children='', **k):
     return str(children)
 
 
-@VOID_TAG.update(name='input')
+@VOID_TAG.update(title='input')
 def _input(children='', **k):
     return str(children)
 
@@ -341,7 +341,7 @@ def main(children='', **k):
     return str(children)
 
 
-@DEFAULT_TAG.update(name='map')
+@DEFAULT_TAG.update(title='map')
 def _map(children='', **k):
     return str(children)
 

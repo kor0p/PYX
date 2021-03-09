@@ -31,7 +31,7 @@ will render
 # tests/test_2.py
 from pyx import cached_tag, state, button, style, br, div
 
-@cached_tag.update(name='div')
+@cached_tag.update(title='div')
 def func(tag):
     tag.count = state(0)
     def increment():
@@ -103,7 +103,7 @@ will render
 # tests/test_3.pyx
 from pyx import Tag, state, select, p  # not necessary, really
 
-@cached_tag.update(name='div')
+@cached_tag.update(title='div')
 def func(tag):
     tag.selected = state(1)
     items = {0: 'first', 1: 'second', 2: 'third'}

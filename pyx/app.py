@@ -13,7 +13,7 @@ try:
 except ImportError as e:
     print(e)
 
-__pyx__ = DEFAULT_TAG.update(name='pyx')(__pyx__)
+__pyx__ = DEFAULT_TAG.update(title='pyx')(__pyx__)
 
 
 @__index__

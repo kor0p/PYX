@@ -5,7 +5,7 @@ from pyx import (  # importing extra data for pyx render
 )
 from pyx import Tag, state, select, p  # not necessary, really
 
-@cached_tag.update(name='div')
+@cached_tag.update(title='div')
 def func(tag):
     tag.selected = state(1)
     items = {0: 'first', 1: 'second', 2: 'third'}
@@ -27,10 +27,9 @@ tags_set = {'p', '__pyx__', '__fragment__', 'select'}
 
 l = locals()
 for tag_name in tags_set:
-    _tag = l.get(tag_name)
-    if _tag:
+    if _tag := l.get(tag_name):
         if tag_name[:2] == tag_name[-2:] == '__':
-            l[tag_name] = cached_tag.update(name=tag_name[2:-2])(_tag)
+            l[tag_name] = cached_tag.update(title=tag_name[2:-2])(_tag)
         else:
             l[tag_name] = cached_tag(_tag)
     else:

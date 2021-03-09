@@ -21,3 +21,7 @@ class JSON(dict):
     def __delattr__(self, key: str):
         if self.get(key) is not None:
             return self.pop(key)
+
+    def __or__(self, other):
+        cls = type(self)
+        return cls(super().__or__(other))
