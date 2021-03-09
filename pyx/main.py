@@ -192,11 +192,16 @@ class Tag:
         """
         if children is None:
             children = self.children
-        if isinstance(children, ChildrenComponent) and self._options.escape:
-            children = ChildrenComponent([
-                escape(child) if isinstance(child, str) else child
-                for child in children
-            ])
+        if isinstance(children, ChildrenComponent):
+            if self._options.escape:
+                children = ChildrenComponent([
+                    escape(child) if isinstance(child, str) else child
+                    for child in children
+                ])
+            else:
+                for child in children:
+                    if not isinstance(child, str):
+                        child._options.escape = False
         attrs = self.kw.copy()
         if 'children' in attrs:
             attrs.pop('children')
