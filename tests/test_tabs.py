@@ -1,9 +1,11 @@
 from pyx import tabs, tab, style, __APP__ as app
+from pyx.utils.app import utils
 
 from tests import test_1, test_2, test_3
 
 
 def main():
+    query = utils.query
     tabs_list = [
         dict(name='page 1', children=test_1.__pyx__(), url='/?page=1'),
         dict(name='page 2', children=test_2.__pyx__(), url='/?page=2'),
@@ -11,8 +13,9 @@ def main():
     ]
     return [
         tabs(
+            selected='page ' + query['page'] if 'page' in query else None,
             _class='content',
-            children=[tab(**kw) for kw in tabs_list]
+            children=[tab(**kw) for kw in tabs_list],
         ),
         style(scoped=True, children='''
             ul {
