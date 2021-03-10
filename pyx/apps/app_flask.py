@@ -1,8 +1,11 @@
 from os import path
 from pathlib import Path
+from urllib import parse
 
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
+
+from pyx.utils import staticproperty
 
 __cookies__ = {}
 __requests__ = {}
@@ -92,9 +95,23 @@ def __index__(func):
     rules = dict((r.rule, r.endpoint) for r in _app.url_map.iter_rules())
 
     if '/' not in rules:
-        _app.route('/')(func)
+        return _app.route('/')(func)
     else:
         print(f'index route exists, using {rules["/"]} endpoint')
+
+
+class utils:
+    @staticproperty
+    def query(*_):
+        return parse.parse_qs(request.query_string)
+
+    @staticproperty
+    def path(*_):
+        return request.view_args
+
+    @staticproperty
+    def host(*_):
+        return request.host
 
 
 __all__ = [
@@ -109,4 +126,5 @@ __all__ = [
     'handle_requests',
     '__index__',
     'make_response',
+    'utils',
 ]

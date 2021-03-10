@@ -9,6 +9,8 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 
+from pyx.utils import staticproperty
+
 make_response = HTMLResponse
 
 __cookies__ = {}
@@ -131,9 +133,30 @@ def __index__(func):
     rules = dict((r.path, r.endpoint) for r in _app.routes if hasattr(r, 'endpoint'))
 
     if '/' not in rules:
-        _app.get('/')(_app.post('/')(func))
+        @_app.get('/')
+        @_app.post('/')
+        def index(_request: Request):
+            global request
+            request = HashableRequest(_request)
+            r = func()
+            return r
+        return index
     else:
         print(f'index route exists, using {rules["/"]} endpoint')
+
+
+class utils:
+    @staticproperty
+    def query(*_):
+        return request.query_params
+
+    @staticproperty
+    def path(*_):
+        return request.path_params
+
+    @staticproperty
+    def host(*_):
+        return request.client.host
 
 
 __all__ = [
@@ -148,4 +171,5 @@ __all__ = [
     'handle_requests',
     '__index__',
     'make_response',
+    'utils',
 ]

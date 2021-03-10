@@ -36,6 +36,12 @@ __index__: Callable[[Route], None]
 
 make_response: Callable[[str], Response]
 
+
+class utils:
+    query: dict[str, str]
+    path: dict[str, str]
+    host: str
+
 if __APP__ == 'Flask':
     from pyx.apps.app_flask import *
 elif __APP__ == 'FastAPI':
@@ -59,4 +65,5 @@ __all__ = [
     'handle_requests',
     '__index__',
     'make_response',
+    'utils',
 ]
