@@ -35,11 +35,10 @@ def render(body: Union[str, Tag, PYXModule]):
         body = body.__pyx__
     if callable(body):
         body = body()
-    result = str(__html__(children=body))
+    response = make_response(str(__html__(children=body)))
     if exists and not _ids_to_remove:
-        return result
+        return response
 
-    response = make_response(result)
     for _id in _ids_to_remove:
         del_dom(_id)
         set_cookie(_id, '', response, expires=0)
@@ -60,6 +59,3 @@ handle_requests(
 def run_app(*a, **k):
     k.setdefault('port', 5000)
     return __APP__.run(*a, **(k or dict(debug=True)))
-
-
-# TODO: add FastAPI app
