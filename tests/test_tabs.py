@@ -7,9 +7,9 @@ from tests import test_1, test_2, test_3
 def main():
     query = utils.query
     tabs_list = [
-        dict(name='page 1', children=test_1.__pyx__(), url='/?page=1'),
-        dict(name='page 2', children=test_2.__pyx__(), url='/?page=2'),
-        dict(name='page 3', children=test_3.__pyx__(), url='/?page=3')
+        dict(name='page 1', children=test_1.__pyx__, url='/?page=1'),
+        dict(name='page 2', children=test_2.__pyx__, url='/?page=2'),
+        dict(name='page 3', children=test_3.__pyx__, url='/?page=3')
     ]
     return [
         tabs(
