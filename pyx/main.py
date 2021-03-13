@@ -88,13 +88,15 @@ class Tag:
     def name(self, name: str) -> None:
         self._options['title'] = name
 
-    def update(self, **k: Options) -> T:
+    def update(self, **k) -> T:
         return type(self)(self.f.__f__, **(self._options | k))
 
     def __new__(cls, f=None, **k):
         if isinstance(f, cls):
             return f
         self = super().__new__(cls)
+        self.kw = JSON()
+        self.__kw = JSON()
         if f:
             k.setdefault('title', f.__name__)
 
@@ -129,19 +131,27 @@ class Tag:
             **self._options,
         )
 
+    def _handle_callable_attrs(self, k, v):
+        _hash = hash(v)
+        _key = self.name + '___' + k + '___' + str(_hash)
+        create_request(get_session_id(), _key, v)
+        self._options.is_in_dom = True  # need to get __id__ on callback
+        return _hash
+
     def _update_attrs(self):
         _attrs = JSON()
         for k, v in self.kw.items():
-            if callable(v) and not (
-                isinstance(v, ChildrenComponent) or hasattr(v, '__render__')
-            ):
-                _hash = hash(v)
-                _key = self.name + '___' + k + '___' + str(_hash)
-                create_request(get_session_id(), _key, v)
-                v = _hash
-                self._options.is_in_dom = True  # need to get __id__ on callback
+            if callable(v) and not (isinstance(v, ChildrenComponent) or hasattr(v, '__render__')):
+                v = self._handle_callable_attrs(k, v)
             _attrs[k] = v
         self.kw = _attrs
+
+        _attrs = JSON()
+        for k, v in self.__kw.items():
+            if callable(v):
+                v = self._handle_callable_attrs(k, v)
+            _attrs[k] = v
+        self.__kw = _attrs
 
     def __call__(self, *a: tuple[Callable], **kw: dict[str, object]):
         """
@@ -174,22 +184,22 @@ class Tag:
         is_class_component = isinstance(this.f.__f__, type)
         args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
+        if '_class' in kw and '_class' not in tag_argspec.args:
+            kw['class'] = kw.pop('_class')
+
         if not tag_argspec.varkw:
             for attr_name in kw.copy().keys():
                 if attr_name not in args_names:
                     this.__kw[attr_name] = kw.pop(attr_name)
 
         this.kw = kw
-
-        if '_class' in kw and '_class' not in tag_argspec.args:
-            kw['class'] = kw.pop('_class')
         if ('children' in kw
             and self._options.children_raw
             and not isinstance(_children := kw.children, ChildrenComponent)
         ):
             kw.children = ChildrenComponent(_children)
 
-        if len(tag_argspec.args) == is_class_component:
+        if len(tag_argspec.args) == 0 or is_class_component:
             this.children = this.f(**kw)
         elif 'tag' in kw:
             this.children = this.f(this.f, **kw)
