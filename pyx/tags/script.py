@@ -13,4 +13,4 @@ class script(**DEFAULT_TAG.extend):
         if not self.scoped:
             __extra__.js += str(self.kw.pop('children'))
             return
-        return super().__render__(self.children)
+        return super().__render__()

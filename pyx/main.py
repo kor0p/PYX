@@ -77,7 +77,7 @@ class Tag:
         return self._options.init
 
     @property
-    def parent(self):
+    def parent(self) -> T:
         return self._options.parent
 
     @property

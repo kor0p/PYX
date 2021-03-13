@@ -2,600 +2,585 @@ from .default import DEFAULT_TAG, VOID_TAG
 
 
 @DEFAULT_TAG
-def a(href=None, children='', **k):
+def a(href=None, *, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def abbr(children='', **k):
+def abbr(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def acronym(children='', **k):
+def acronym(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def address(children='', **k):
+def address(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def applet(children='', **k):
+def applet(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def area(children='', **k):
+def area(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def article(children='', **k):
+def article(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def aside(children='', **k):
+def aside(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def audio(children='', **k):
+def audio(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def b(children='', **k):
+def b(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def base(children='', **k):
+def base(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def basefont(children='', **k):
+def basefont(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def bdi(children='', **k):
+def bdi(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def bdo(children='', **k):
+def bdo(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def big(children='', **k):
+def big(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def blockquote(children='', **k):
-    return str(children)
-
-
-@DEFAULT_TAG
-def body(children='', **k):
+def blockquote(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def br(children='', **k):
+def br(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG.update(is_in_dom=True)
-def button(children='', **k):
+def button(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def canvas(children='', **k):
+def canvas(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def caption(children='', **k):
+def caption(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def center(children='', **k):
+def center(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def cite(children='', **k):
+def cite(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def code(children='', **k):
+def code(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def col(children='', **k):
+def col(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def colgroup(children='', **k):
+def colgroup(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def data(children='', **k):
+def data(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def datalist(children='', **k):
+def datalist(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def dd(children='', **k):
+def dd(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG.update(title='del')
-def _del(children='', **k):
+def _del(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def details(children='', **k):
+def details(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def dfn(children='', **k):
+def dfn(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def dialog(children='', **k):
+def dialog(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def dir(children='', **k):
+def dir(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def div(children='', **k):
+def div(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def dl(children='', **k):
+def dl(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def dt(children='', **k):
+def dt(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def em(children='', **k):
+def em(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def embed(children='', **k):
+def embed(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def fieldset(children='', **k):
+def fieldset(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def figcaption(children='', **k):
+def figcaption(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def figure(children='', **k):
+def figure(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def font(children='', **k):
+def font(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def footer(children='', **k):
+def footer(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def form(children='', **k):
+def form(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def frame(children='', **k):
+def frame(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def frameset(children='', **k):
+def frameset(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def h1(children='', **k):
+def h1(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def h2(children='', **k):
+def h2(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def h3(children='', **k):
+def h3(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def h4(children='', **k):
+def h4(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def h5(children='', **k):
+def h5(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def h6(children='', **k):
+def h6(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def head(children='', **k):
-    return str(children)
-
-
-@DEFAULT_TAG
-def header(children='', **k):
+def header(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def hr(children='', **k):
+def hr(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def html(children='', **k):
+def i(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def i(children='', **k):
-    return str(children)
-
-
-@DEFAULT_TAG
-def iframe(children='', **k):
+def iframe(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def img(children='', **k):
+def img(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG.update(title='input')
-def _input(children='', **k):
+def _input(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def ins(children='', **k):
+def ins(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def kbd(children='', **k):
+def kbd(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def label(children='', **k):
+def label(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def legend(children='', **k):
+def legend(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def li(children='', **k):
+def li(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def link(children='', **k):
+def link(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def main(children='', **k):
+def main(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG.update(title='map')
-def _map(children='', **k):
+def _map(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def mark(children='', **k):
+def mark(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def meta(children='', **k):
+def meta(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def meter(children='', **k):
+def meter(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def nav(children='', **k):
+def nav(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def noframes(children='', **k):
+def noframes(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def noscript(children='', **k):
+def noscript(*, children: str = '') -> str:
+    return str(children)
+
+
+@DEFAULT_TAG.update(title='object')
+def _object(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def object(children='', **k):
+def ol(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def ol(children='', **k):
+def optgroup(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def optgroup(children='', **k):
+def option(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def option(children='', **k):
+def output(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def output(children='', **k):
-    return str(children)
-
-
-@DEFAULT_TAG
-def p(children='', **k):
+def p(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def param(children='', **k):
+def param(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def picture(children='', **k):
+def picture(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def pre(children='', **k):
+def pre(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def progress(children='', **k):
+def progress(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def q(children='', **k):
+def q(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def rp(children='', **k):
+def rp(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def rt(children='', **k):
+def rt(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def ruby(children='', **k):
+def ruby(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def s(children='', **k):
+def s(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def samp(children='', **k):
+def samp(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def section(children='', **k):
+def section(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def select(children='', **k):
+def select(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def small(children='', **k):
+def small(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def source(children='', **k):
+def source(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def span(children='', **k):
+def span(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def strike(children='', **k):
+def strike(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def strong(children='', **k):
+def strong(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def sub(children='', **k):
+def sub(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def summary(children='', **k):
+def summary(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def sup(children='', **k):
+def sup(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def svg(children='', **k):
+def svg(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def table(children='', **k):
+def table(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def tbody(children='', **k):
+def tbody(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def td(children='', **k):
+def td(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def template(children='', **k):
+def template(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def textarea(children='', **k):
+def textarea(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def tfoot(children='', **k):
+def tfoot(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def th(children='', **k):
+def th(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def thead(children='', **k):
+def thead(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def time(children='', **k):
+def time(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def title(children='', **k):
+def title(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def tr(children='', **k):
+def tr(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def track(children='', **k):
+def track(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def tt(children='', **k):
+def tt(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def u(children='', **k):
+def u(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def ul(children='', **k):
+def ul(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def var(children='', **k):
+def var(*, children: str = '') -> str:
     return str(children)
 
 
 @DEFAULT_TAG
-def video(children='', **k):
+def video(*, children: str = '') -> str:
     return str(children)
 
 
 @VOID_TAG
-def wbr(children='', **k):
+def wbr(*, children: str = '') -> str:
     return str(children)
