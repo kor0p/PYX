@@ -17,7 +17,7 @@ def main():
             _class='content',
             children=[tab(**kw) for kw in tabs_list],
         ),
-        style(scoped=True, children='''
+        style(scoped=True, head=True, children='''
             ul {
                 list-style-type: none;
                 margin: 0;
