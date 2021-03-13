@@ -1,12 +1,12 @@
 import inspect
-from functools import wraps
-from typing import Union, Callable, TypeVar
+from typing import Union, Optional, Callable, TypeVar
 from types import ModuleType
 
-from .utils import escape, ChildrenComponent, JSON, state, set_to_dom, get_session_id
+from .utils import ChildrenComponent, JSON, state, set_to_dom, get_session_id
 from .utils.app import create_request
 
 T = TypeVar('T', bound='Tag')
+C = TypeVar('C', bound='Component')
 
 
 class ClassComponent:
@@ -17,15 +17,41 @@ class PYXModule(ModuleType):
     __pyx__: Callable
 
 
+class Options(JSON):
+    title: str
+    cache: bool
+    is_in_dom: bool
+    children_raw: bool
+    init: bool
+    escape: bool
+
+    _void_tag: bool
+
+    parent: T
+
+    def __init__(self, *a, **k):
+        if a:
+            super().__init__(*a, **k)
+            return
+        k.setdefault('cache', False)
+        k.setdefault('is_in_dom', True)
+        k.setdefault('children_raw', False)
+        k.setdefault('init', True)
+        k.setdefault('escape', True)
+
+        k.setdefault('_void_tag', False)
+        super().__init__(**k)
+
+
 class Tag:
-    f = None
-    kw = {}
-    hash = None
-    session = None
+    f: Optional[C] = None
+    kw: JSON = JSON()
+    __kw: JSON = JSON()
+    hash: Optional[int] = None
+    session: Optional[str] = None
     children: Union[ChildrenComponent[str, ClassComponent]] = ''
-    _cached = {}
-    _options: JSON = JSON()
-    __name__ = None  # uses for class components
+    _cached: dict = {}
+    _options: Options = Options()
 
     def __len__(self):
         return 0
@@ -33,8 +59,9 @@ class Tag:
     def __bool__(self):
         return bool(self.f)
 
-    def extend(self, **options):
-        return dict(metaclass=MetaTag) | self._options | options
+    @property
+    def extend(self) -> dict:
+        return dict(metaclass=MetaTag, _opts=self._options)
 
     def __add__(self, other):
         return ChildrenComponent([self, other])
@@ -47,40 +74,31 @@ class Tag:
                 print('inited')
             return ''
         """
-        return self._options.get('init')
+        return self._options.init
 
     @property
-    def name(self):
-        return self.__name__ or self._options.get('title')
+    def parent(self):
+        return self._options.parent
+
+    @property
+    def name(self) -> str:
+        return self._options.title or 'div'
 
     @name.setter
-    def name(self, name):
+    def name(self, name: str) -> None:
         self._options['title'] = name
 
-    def update(self, **k) -> Callable[[Callable], T]:
-        cls = type(self)
+    def update(self, **k: Options) -> T:
+        return type(self)(self.f.__f__, **(self._options | k))
 
-        @wraps(cls)
-        def _tag(f):
-            return cls(f, **(self._options | k))
-
-        _tag.update = lambda **_k: self.update(**(k | _k))
-        return _tag
-
-    def __new__(cls, f=None, *, title='', cache=False, is_in_dom=True, init=True, escape=True, **k):
+    def __new__(cls, f=None, **k):
         if isinstance(f, cls):
             return f
         self = super().__new__(cls)
+        if f:
+            k.setdefault('title', f.__name__)
 
-        self._options = self._options | JSON(
-            cache=cache,
-            is_in_dom=is_in_dom,
-            init=init,
-            escape=escape,
-            **k,
-        )
-
-        self.name = title or (f.__name__ if f else '')
+        self._options = Options(**(self._options | k))
 
         self.f = Component(f)
         self.f.__tag__ = self
@@ -141,10 +159,10 @@ class Tag:
             pass
         """
         if a:
-            return self.update()(*a)
+            return type(self)(*a, **self._options)
         kw = self.kw | kw
         kw = JSON(kw)
-        is_cached = self._options.get('cache')
+        is_cached = self._options.cache
         cached_key = None
         if is_cached:
             cached_key = self._get_cached_key(kw)
@@ -152,19 +170,26 @@ class Tag:
                 return cached
 
         this = self.clone()
-        this.f.kw = this.kw = kw
-        tag_arguments = inspect.getfullargspec(this.f._f)
-        is_class_component = isinstance(this.f._f, type)
+        tag_argspec = inspect.getfullargspec(this.f.__f__)
+        is_class_component = isinstance(this.f.__f__, type)
+        args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
-        if '_class' in kw and '_class' not in tag_arguments.args:
+        if not tag_argspec.varkw:
+            for attr_name in kw.copy().keys():
+                if attr_name not in args_names:
+                    this.__kw[attr_name] = kw.pop(attr_name)
+
+        this.f.kw = this.kw = kw
+
+        if '_class' in kw and '_class' not in tag_argspec.args:
             kw['class'] = kw.pop('_class')
         if ('children' in kw
-            and self._options.get('children_raw', False)
+            and self._options.children_raw
             and not isinstance(_children := kw.children, ChildrenComponent)
         ):
-            kw['children'] = ChildrenComponent(_children)
+            kw.children = ChildrenComponent(_children)
 
-        if len(tag_arguments.args) == is_class_component:
+        if len(tag_argspec.args) == is_class_component:
             this.children = this.f(**kw)
         elif 'tag' in kw:
             this.children = this.f(this.f, **kw)
@@ -175,17 +200,16 @@ class Tag:
 
         this._update_attrs()
         this._options['init'] = False
-        if is_cached:
+        if is_cached and not self.init:
             self._cached[cached_key] = this
         return this
 
     def __repr__(self):
         return str(self.name) + '(' + ', '.join(str(k) + '=' + str(v) for k, v in self.kw.items()) + ')'
 
-    def __render__(self, children=None):
+    def __render__(self, children=None, *, get_attrs=False):
         """
-        @Tag()
-        class World:
+        class World(**Tag.extend):
             def __init__(self, **attrs):
                 print('Init World')
             def __render__(self, tag):
@@ -246,16 +270,21 @@ class MetaTag(type):
     Allows to inherit Tag with updated options
 
     >>> cached_tag = Tag(cache=True)
-    >>> class MyApp(**cached_tag.extend()): pass
+    >>> class MyApp(**cached_tag.extend): pass
     >>> assert MyApp._options.cache == True
 
-    >>> class MyApp(**cached_tag.extend(cache=False)): pass
+    >>> class MyApp(**cached_tag.extend, cache=False): pass
     >>> assert MyApp._options.cache == False
     """
-    def __new__(cls, name, bases, dct, **k):
+    def __new__(mcs, name, bases, dct, **kwargs):
         bases = (Tag, *bases)
-        self = super().__new__(cls, name, bases, dct)
-        self._options = JSON(k)
+        self = super().__new__(mcs, name, bases, dct)
+
+        if 'title' not in kwargs:
+            kwargs['title'] = name
+        parent_options = kwargs.pop('_opts')
+        self._options = JSON(kwargs | parent_options)
+
         return self
 
 
