@@ -225,10 +225,13 @@ class Tag:
             set_to_dom(_hash, self)
         self._update_attrs()
 
-        if getattr(self.f, '__render__', None) is not None:
+        if self.f and getattr(self.f, '__render__', None) is not None:
             result = str(self.children.__render__(self))
         else:
             result = self.__render__()
+
+        if not result:
+            return ''
 
         result = result.replace(
             '<' + self.name,
@@ -257,7 +260,7 @@ class MetaTag(type):
 
 
 class Component:
-    _f: Callable = None
+    __f__: Callable = None
     __tag__: Tag = None
     kw: JSON = JSON()
     _states: JSON = JSON()
@@ -281,13 +284,16 @@ class Component:
     def clone(self, deep=False):
         cls = type(self)
 
-        this = cls(self._f)
+        this = cls(self.__f__)
         this.kw = self.kw
         this._state_cls = self._state_cls
         if deep:
             this._states = self._states
 
         return this
+
+    def __bool__(self):
+        return bool(self.__f__)
 
     def __new__(cls, f):
         if isinstance(f, cls):
@@ -296,7 +302,7 @@ class Component:
 
         if f and hasattr(f, '__globals__'):
             f.__globals__.setdefault('self', self)
-        self._f = f
+        self.__f__ = f
         self.kw = JSON()
         self._states = JSON()
 
@@ -307,20 +313,20 @@ class Component:
 
     def __str__(self):
         return (
-            '<Component ' + self._f.__name__ + '('
+            '<Component ' + self.__f__.__name__ + '('
             + ', '.join(k + '=' + v for k, v in self.kw.items())
             + ')>'
         )
 
     def __hash__(self):
         return hash((
-            self._f,
+            self.__f__,
             self.__name__,
             self._state_cls,
         ))
 
     def __call__(self, *a, **k):
-        f = self._f
+        f = self.__f__
         if not f or not callable(f):
             return
         return ChildrenComponent(f(*a, **k))
@@ -329,8 +335,8 @@ class Component:
         _value = None
         if key in self._states:
             _value = self._get(key)
-        elif key in dir(self._f):
-            _value = getattr(self._f, key, _value)
+        elif key in dir(self.__f__):
+            _value = getattr(self.__f__, key, _value)
         else:
             try:
                 _value: Union[state, object] = super().__getattribute__(key)
