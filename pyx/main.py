@@ -171,6 +171,8 @@ class Tag:
         else:
             this.children = this.f(tag=this.f, **kw)
 
+        this.children._options.parent = this
+
         this._update_attrs()
         this._options['init'] = False
         if is_cached:

@@ -51,6 +51,15 @@ class ChildrenComponent(list):
             for child in self
         ])
 
+    def __setattr__(self, key, value):
+        if key in dir(self):
+            return super().__setattr__(key, value)
+        for child in self:
+            try:
+                setattr(child, key, value)
+            except AttributeError:
+                pass
+
     def __repr__(self):
         return join('', self, repr)
 
