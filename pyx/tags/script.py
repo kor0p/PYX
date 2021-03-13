@@ -2,16 +2,15 @@ from .default import DEFAULT_TAG
 from ..utils import __extra__
 
 
-@DEFAULT_TAG
-class script:
+class script(**DEFAULT_TAG.extend):
     def __init__(self, scoped=True, children='', src='', **kwargs):
         self.scoped = scoped
         self.children = children
         self.src = src
         self.kwargs = kwargs
 
-    def __render__(self, tag):
+    def __render__(self):
         if not self.scoped:
-            __extra__.js += str(tag.kw.pop('children'))
+            __extra__.js += str(self.kw.pop('children'))
             return
-        return tag.__render__(self.children)
+        return super().__render__(self.children)

@@ -66,7 +66,9 @@ def __python__():
 
 @DEFAULT_TAG
 def render_error(traceback, **k):
-    return f'ERROR:\n  traceback: {traceback}\n  kwargs: {k}'
+    children = f'ERROR:\n  traceback: {traceback}\n  kwargs: {k}'
+    print(children)
+    return children
 
 
 @DEFAULT_TAG
@@ -93,7 +95,7 @@ def __body__(*, children=''):
     )
 
 
-@cached_tag.update(title='html', children_raw=True)
+@cached_tag.update(title='html', children_raw=True, escape=False)
 def __html__(*, head='', children=''):
     __extra__.css = ''
     __extra__.head = ''
