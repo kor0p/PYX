@@ -9,6 +9,7 @@ class style(**cached_tag.extend):
         if scoped:
             scoped, children = self._scope_style(children)
         self.lang = lang
+        self.head = head
         self.scoped = scoped
         self.children = children
 
@@ -29,6 +30,9 @@ class style(**cached_tag.extend):
         )
 
     def __render__(self):
-        __extra__.css += self.children
         attr, style_name = self.scoped
-        self._options.parent.kw[attr] = style_name
+        self.parent.kw[attr] = style_name
+        if self.head:
+            __extra__.css += self.children
+        else:
+            return super().__render__(self.children)
