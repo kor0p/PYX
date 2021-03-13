@@ -141,7 +141,7 @@ class Tag:
                 v = _hash
                 self._options.is_in_dom = True  # need to get __id__ on callback
             _attrs[k] = v
-        self.f.kw = self.kw = _attrs
+        self.kw = _attrs
 
     def __call__(self, *a: tuple[Callable], **kw: dict[str, object]):
         """
@@ -179,7 +179,7 @@ class Tag:
                 if attr_name not in args_names:
                     this.__kw[attr_name] = kw.pop(attr_name)
 
-        this.f.kw = this.kw = kw
+        this.kw = kw
 
         if '_class' in kw and '_class' not in tag_argspec.args:
             kw['class'] = kw.pop('_class')
@@ -291,7 +291,6 @@ class MetaTag(type):
 class Component:
     __f__: Callable = None
     __tag__: Tag = None
-    kw: JSON = JSON()
     _states: JSON = JSON()
     frame = None
     locals: dict = {}
@@ -300,6 +299,10 @@ class Component:
     @property
     def init(self):
         return self.__tag__.init
+
+    @property
+    def kw(self):
+        return self.__tag__.kw
 
     def _get(self, key):
         return self._states[key]
@@ -314,7 +317,6 @@ class Component:
         cls = type(self)
 
         this = cls(self.__f__)
-        this.kw = self.kw
         this._state_cls = self._state_cls
         if deep:
             this._states = self._states
@@ -332,7 +334,6 @@ class Component:
         if f and hasattr(f, '__globals__'):
             f.__globals__.setdefault('self', self)
         self.__f__ = f
-        self.kw = JSON()
         self._states = JSON()
 
         return self
