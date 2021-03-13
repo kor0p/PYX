@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .core import join
+from .core import join, escape
 
 
 class ChildrenComponent(list):
@@ -15,6 +15,24 @@ class ChildrenComponent(list):
         except TypeError:
             pass
         super().__init__((args, ))
+
+    @staticmethod
+    def escape(children, _escape=True, /):
+        if not isinstance(children, ChildrenComponent):
+            return children
+
+        if _escape:
+            return ChildrenComponent([
+                escape(child)
+                if isinstance(child, str) else
+                child
+                for child in children
+            ])
+        else:
+            for child in children:
+                if not isinstance(child, str):
+                    child._options.escape = False
+            return children
 
     def __hash__(self):
         return hash(tuple(self or ()))

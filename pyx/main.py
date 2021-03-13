@@ -192,19 +192,13 @@ class Tag:
         """
         if children is None:
             children = self.children
-        if isinstance(children, ChildrenComponent):
-            if self._options.escape:
-                children = ChildrenComponent([
-                    escape(child) if isinstance(child, str) else child
-                    for child in children
-                ])
-            else:
-                for child in children:
-                    if not isinstance(child, str):
-                        child._options.escape = False
-        attrs = self.kw.copy()
+        children = str(ChildrenComponent.escape(children, self._options.escape))
+        attrs = self.kw | self.__kw
         if 'children' in attrs:
             attrs.pop('children')
+
+        if get_attrs:
+            return attrs, children
 
         result = '<' + self.name
         for k, v in attrs.items():
@@ -215,7 +209,7 @@ class Tag:
                 continue
             result += ' ' + k + '="' + str(v) + '"'
         result += '>'
-        if not self._options.get('_void_tag', False):
+        if not self._options._void_tag:
             result += f'{children}</{self.name}>'
 
         return result
