@@ -97,10 +97,16 @@ class Tag:
         if isinstance(f, cls):
             return f
         self = super().__new__(cls)
-        self.kw = JSON()
         self.__kw = JSON()
         if f:
             k.setdefault('title', f.__name__)
+            name = k['title']
+            # def __pyx__(): ... -> <pyx></pyx>
+            # class __html__: ... -> <html></html>
+            if name[:2] == name[-2:] == '__':
+                k['title'] = name[2:-2]
+            else:
+                k['title'] = name
 
         self._options = Options(**(self._options | k))
 

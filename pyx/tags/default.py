@@ -31,8 +31,8 @@ DEFAULT_BODY = '''
 __extra__.js = ''
 __extra__.body = ''
 
-DEFAULT_TAG: Tag = cached_tag.update(is_in_dom=False, children_raw=True)
-MAIN_TAG: Tag = cached_tag.update(children_raw=True, escape=False)
+DEFAULT_TAG: Tag = cached_tag.update(is_in_dom=False)
+MAIN_TAG: Tag = cached_tag.update(escape=False)
 VOID_TAG: Tag = DEFAULT_TAG.update(_void_tag=True)
 
 
@@ -90,7 +90,7 @@ class __fragment__(**DEFAULT_TAG.extend):
         return self.children
 
 
-@MAIN_TAG.update(title='head')
+@MAIN_TAG
 def __head__(*, children=''):
     return (
         DEFAULT_HEAD.format(extra_css=__extra__.css, extra_head=__extra__.head,)
@@ -98,14 +98,14 @@ def __head__(*, children=''):
     )
 
 
-@MAIN_TAG.update(title='body')
+@MAIN_TAG
 def __body__(*, children=''):
     return children + DEFAULT_BODY.format(
         extra_js=__extra__.js, extra_body=__extra__.body,
     )
 
 
-@MAIN_TAG.update(title='html')
+@MAIN_TAG
 def __html__(*, head='', children=''):
     __extra__.css = ''
     __extra__.head = ''

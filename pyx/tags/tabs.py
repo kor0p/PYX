@@ -30,7 +30,7 @@ def tabs(tag, selected=None, children=(), _class=''):
     return [
         ul(children=children),
         div(_class=_class, children=ChildrenComponent([
-            child.kw.get('children')
+            child.kw.children
             for child in children
             if not isinstance(child, str) and child.kw.active
         ])),
