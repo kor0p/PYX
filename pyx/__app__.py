@@ -57,5 +57,10 @@ handle_requests(
 
 
 def run_app(*a, **k):
+    import os
     k.setdefault('port', 5000)
+    app_name = os.environ.get('__APP__')
+    if app_name == 'Flask':
+        if 'name' in k:
+            __APP__.import_name = k.pop('name')
     return __APP__.run(*a, **(k or dict(debug=True)))

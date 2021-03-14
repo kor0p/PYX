@@ -5,7 +5,7 @@ from urllib import parse
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
 
-from pyx.utils import staticproperty
+from pyx.utils import staticproperty, join
 
 __cookies__ = {}
 __requests__ = {}
@@ -103,7 +103,11 @@ def __index__(func):
 class utils:
     @staticproperty
     def query(*_):
-        return parse.parse_qs(request.query_string)
+        result: dict[bytes, list[bytes]] = parse.parse_qs(request.query_string)
+        return {
+            k.decode('utf-8'): ''.join(b.decode('utf-8') for b in v)
+            for k, v in result.items()
+        }
 
     @staticproperty
     def path(*_):
