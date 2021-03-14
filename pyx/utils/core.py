@@ -2,6 +2,10 @@ import sys
 from typing import Callable
 
 
+def is_class(cls):
+    return isinstance(cls, type)
+
+
 class classproperty:
     """
     @property for @classmethod

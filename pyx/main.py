@@ -3,7 +3,7 @@ import keyword
 from typing import Union, Optional, Callable, TypeVar
 from types import ModuleType
 
-from .utils import ChildrenComponent, JSON, state, set_to_dom, get_session_id
+from .utils import ChildrenComponent, is_class, JSON, state, set_to_dom, get_session_id
 from .utils.app import create_request
 
 T = TypeVar('T', bound='Tag')
@@ -67,6 +67,14 @@ class Tag:
 
     def __add__(self, other):
         return ChildrenComponent([self, other])
+
+    @property
+    def _is_class(self):
+        return bool(self.f) and is_class(self.f.__f__)
+
+    @property
+    def _is_class_component(self):
+        return self._is_class and issubclass(self.f.__f__, Tag)
 
     @property
     def init(self):
@@ -189,7 +197,7 @@ class Tag:
 
         this = self.clone()
         tag_argspec = inspect.getfullargspec(this.f.__f__)
-        is_class_component = isinstance(this.f.__f__, type)
+        _is_class = self._is_class
         args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
         for attribute in self._underscore_attributes:
@@ -203,13 +211,10 @@ class Tag:
                     this.__kw[attr_name] = kw.pop(attr_name)
 
         this.kw = kw
-        if ('children' in kw
-            and self._options.children_raw
-            and not isinstance(_children := kw.children, ChildrenComponent)
-        ):
-            kw.children = ChildrenComponent(_children)
+        if 'children' in kw and (self._options.children_raw or not isinstance(kw.children, ChildrenComponent)):
+            kw.children = ChildrenComponent(kw.children)
 
-        if len(tag_argspec.args) == 0 or is_class_component:
+        if len(tag_argspec.args) == 0 or _is_class:
             this.children = this.f(**kw)
         elif 'tag' in kw:
             this.children = this.f(this.f, **kw)
@@ -269,7 +274,9 @@ class Tag:
             set_to_dom(_hash, self)
         self._update_attrs()
 
-        if self.f and getattr(self.f, '__render__', None) is not None:
+        if self.f and self._is_class_component:
+            result = str(self.children.__render__())
+        elif self.f and callable(getattr(self.f, '__render__', None)):
             result = str(self.children.__render__(self))
         else:
             result = self.__render__()
@@ -303,7 +310,8 @@ class MetaTag(type):
         if 'title' not in kwargs:
             kwargs['title'] = name
         parent_options = kwargs.pop('_opts')
-        self._options = JSON(kwargs | parent_options)
+        self._options = Options(parent_options | kwargs)
+        self.__bool__ = lambda _self: True
 
         return self
 
