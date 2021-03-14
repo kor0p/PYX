@@ -1,4 +1,5 @@
 import inspect
+import keyword
 from typing import Union, Optional, Callable, TypeVar
 from types import ModuleType
 
@@ -51,6 +52,7 @@ class Tag:
     session: Optional[str] = None
     children: Union[ChildrenComponent[str, ClassComponent]] = ''
     _cached: dict = {}
+    _underscore_attributes = keyword.kwlist  # async, class, for, etc.
     _options: Options = Options()
 
     def __len__(self):
@@ -184,8 +186,10 @@ class Tag:
         is_class_component = isinstance(this.f.__f__, type)
         args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
-        if '_class' in kw and '_class' not in tag_argspec.args:
-            kw['class'] = kw.pop('_class')
+        for attribute in self._underscore_attributes:
+            underscored = '_' + attribute
+            if underscored in kw and underscored not in tag_argspec.args:
+                kw[attribute] = kw.pop(underscored)
 
         if not tag_argspec.varkw:
             for attr_name in kw.copy().keys():
