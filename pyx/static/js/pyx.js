@@ -123,7 +123,7 @@ window.__request = async function __request(event_type, el, url, params) {
     try {
         window.printRequestError() // clear error
         const res = await fetch(
-            `pyx/${el.tagName.toLowerCase()}___${event_type}___${url}`,
+            `/pyx/${el.tagName.toLowerCase()}___${event_type}___${url}`,
             { method: 'POST', body: JSON.stringify(params) }
         )
         if (res.status !== 200) {

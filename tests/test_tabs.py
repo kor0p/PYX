@@ -1,4 +1,4 @@
-from pyx import tabs, tab, style, __APP__ as app
+from pyx import tabs, div, tab, style, __APP__ as app
 from pyx.utils.app import utils
 
 from tests import test_1, test_2, test_3
@@ -11,7 +11,7 @@ def main():
         dict(name='page 2', children=test_2.__pyx__, url='/?page=2'),
         dict(name='page 3', children=test_3.__pyx__, url='/?page=3')
     ]
-    return [
+    return div(children=[
         tabs(
             selected='page ' + query['page'] if 'page' in query else None,
             _class='content',
@@ -60,7 +60,7 @@ def main():
                 animation: fadeEffect 1s;
             }
         '''),
-    ]
+    ])
 
 
 __pyx__ = main
