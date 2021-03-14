@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 
-from pyx.utils import staticproperty
+from pyx.utils import classproperty
 
 make_response = HTMLResponse
 
@@ -146,17 +146,30 @@ def __index__(func):
 
 
 class utils:
-    @staticproperty
-    def query(*_):
-        return request.query_params
+    _query: dict = {}
+    _path: dict = {}
+    _host: str = ''
 
-    @staticproperty
-    def path(*_):
-        return request.path_params
+    @classproperty
+    def query(cls):
+        if not cls._query:
+            try:
+                cls._query = request.query_params
+            except KeyError:
+                pass
+        return cls._query
 
-    @staticproperty
-    def host(*_):
-        return request.client.host
+    @classproperty
+    def path(cls):
+        if not cls._path:
+            cls._path = request.path_params
+        return cls._path
+
+    @classproperty
+    def host(cls):
+        if not cls._host:
+            cls._host = request.client.host
+        return cls._host
 
 
 __all__ = [
