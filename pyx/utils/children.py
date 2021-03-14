@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from .core import join, escape
 
@@ -82,3 +82,6 @@ class ChildrenComponent(list):
         this = self.copy()
         this.insert(0, other)
         return this
+
+
+ChildType = Union[str, list, ChildrenComponent]
