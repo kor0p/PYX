@@ -6,8 +6,8 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='pyx-framework',
-    version='0.1.0',
-    packages=['pyx', 'pyx.tags'],
+    version='0.2.0',
+    packages=['pyx', 'pyx.tags', 'pyx.utils', 'pyx.apps'],
     url='https://github.com/kor0p/PYX#PYX',
     license='GPLv3',
     author='kor0p',
