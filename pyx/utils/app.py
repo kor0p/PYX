@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Callable, TypeVar
+from typing import Optional, Callable, TypeVar, Dict
 
 Response = TypeVar('Response')
 APP = TypeVar('APP')
@@ -24,7 +24,7 @@ SALT_ID = str
 
 
 create_app: Callable[[str], APP]
-get_cookies: Callable[[], Optional[dict[str, str]]]
+get_cookies: Callable[[], Optional[Dict[str, str]]]
 get_cookie: Callable[[str, Optional[str]], str]
 set_cookie: Callable[[str, str, Optional[Response]], Response]
 create_request: Callable[[SALT_ID, str, TAG], None]
@@ -38,8 +38,8 @@ make_response: Callable[[str], Response]
 
 
 class utils:
-    query: dict[str, str]
-    path: dict[str, str]
+    query: Dict[str, str]
+    path: Dict[str, str]
     host: str
 
 if __APP__ == 'Flask':

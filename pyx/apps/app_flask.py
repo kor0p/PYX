@@ -1,6 +1,7 @@
 from os import path
 from pathlib import Path
 from urllib import parse
+from typing import List, Dict
 
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
@@ -111,7 +112,7 @@ def __index__(func):
 class utils:
     @staticproperty
     def query(*_):
-        result: dict[bytes, list[bytes]] = parse.parse_qs(request.query_string)
+        result: Dict[bytes, List[bytes]] = parse.parse_qs(request.query_string)
         return {
             k.decode('utf-8'): ''.join(b.decode('utf-8') for b in v)
             for k, v in result.items()

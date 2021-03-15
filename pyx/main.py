@@ -1,6 +1,6 @@
 import inspect
 import keyword
-from typing import Union, Optional, Callable, TypeVar
+from typing import Union, Optional, Callable, TypeVar, List
 from types import ModuleType
 
 from .utils import ChildrenComponent, is_class, JSON, state, merge_dicts
@@ -51,7 +51,7 @@ class Tag:
     __kw: JSON = JSON()
     hash: Optional[int] = None
     session: Optional[str] = None
-    children: Union[ChildrenComponent[str, ClassComponent]] = ''
+    children: Union[List[str, ClassComponent]] = ''
     _cached: dict = {}
     _underscore_attributes = keyword.kwlist  # async, class, for, etc.
     _options: Options = Options()
