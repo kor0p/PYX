@@ -5,7 +5,7 @@ from ..utils import get_random_name
 
 
 class style(**cached_tag.extend):
-    def __init__(self, *, lang='css', scoped=False, children=''):
+    def __init__(self, *, lang='css', scoped=False, head=False, children=''):
         if scoped:
             scoped, children = self._scope_style(children)
         self.lang = lang

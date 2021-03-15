@@ -3,7 +3,7 @@ import keyword
 from typing import Union, Optional, Callable, TypeVar
 from types import ModuleType
 
-from .utils import ChildrenComponent, is_class, JSON, state, set_to_dom, get_session_id
+from .utils import ChildrenComponent, is_class, JSON, state
 from .utils.app import create_request
 from .utils.dom import set_to_dom, get_session_id
 
