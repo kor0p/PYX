@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 
-from pyx.utils import classproperty
+from pyx.utils import classproperty, merge_dicts
 from pyx.utils.id import __PYX_ID__
 # you can import any pyx.utils,
 # except pyx.utils.app and pyx.utils.dom,
@@ -84,7 +84,7 @@ def create_app(name='<pyx>', **kwargs):
 
 
 def get_cookies():
-    return request.cookies | __cookies__.get(request, {})
+    return merge_dicts(request.cookies, __cookies__.get(request, {}))
 
 
 def get_cookie(key, default=None):
@@ -126,7 +126,7 @@ def handle_requests(request_prefix, on_error, rerender):
     @_app.post(request_prefix + '/{name}')
     async def __pyx__requests__(req: Request, name: str):
         _error_status = 500
-        kw = dict(req.query_params) | dict(loads(await req.body()))
+        kw = merge_dicts(dict(req.query_params), dict(loads(await req.body())))
         try:
             try:
                 req = get_request(get_session_id(), name)

@@ -3,7 +3,7 @@ import keyword
 from typing import Union, Optional, Callable, TypeVar
 from types import ModuleType
 
-from .utils import ChildrenComponent, is_class, JSON, state, set_to_dom, get_session_id
+from .utils import ChildrenComponent, is_class, JSON, state, merge_dicts
 from .utils.app import create_request
 from .utils.dom import set_to_dom, get_session_id
 
@@ -100,7 +100,7 @@ class Tag:
         self._options['title'] = name
 
     def update(self, **k) -> T:
-        return type(self)(self.f.__f__, **(self._options | k))
+        return type(self)(self.f.__f__, **merge_dicts(self._options, k))
 
     def __new__(cls, f=None, **k):
         if isinstance(f, cls):
@@ -117,7 +117,7 @@ class Tag:
             else:
                 k['title'] = name
 
-        self._options = Options(**(self._options | k))
+        self._options = Options(**merge_dicts(self._options, k))
 
         self.f = Component(f)
         self.f.__tag__ = self
@@ -187,7 +187,7 @@ class Tag:
         """
         if a:
             return type(self)(*a, **self._options)
-        kw = self.kw | kw
+        kw = merge_dicts(self.kw, kw)
         kw = JSON(kw)
         is_cached = self._options.cache
         cached_key = None
@@ -246,7 +246,7 @@ class Tag:
         if children is None:
             children = self.children
         children = str(ChildrenComponent.escape(children, self._options.escape))
-        attrs = self.kw | self.__kw
+        attrs = merge_dicts(self.kw, self.__kw)
         if 'children' in attrs:
             attrs.pop('children')
 
@@ -312,7 +312,7 @@ class MetaTag(type):
         if 'title' not in kwargs:
             kwargs['title'] = name
         parent_options = kwargs.pop('_opts')
-        self._options = Options(parent_options | kwargs)
+        self._options = Options(merge_dicts(parent_options, kwargs))
         self.__bool__ = lambda _self: True
 
         return self

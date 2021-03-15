@@ -20,7 +20,8 @@ def tabs(tag, selected=None, children=(), _class=''):
     for child in children:
         child.kw.active = tag.selected == child.kw.name
         child.kw.on_click = lambda t=child: set_selected(t)
-        if callable(children_kwarg := child.kw.get('children')):
+        children_kwarg = child.kw.get('children')
+        if callable(children_kwarg):
             child.kw.children = children_kwarg()
 
     def set_selected(t):

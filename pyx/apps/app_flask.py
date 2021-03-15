@@ -5,7 +5,7 @@ from urllib import parse
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
 
-from pyx.utils import staticproperty
+from pyx.utils import staticproperty, merge_dicts
 from pyx.utils.id import __PYX_ID__
 # you can import any pyx.utils,
 # except pyx.utils.app and pyx.utils.dom,
@@ -36,7 +36,7 @@ def create_app(name='<pyx>', **kwargs):
 
 
 def get_cookies():
-    return request.cookies | __cookies__.get(request, {})
+    return merge_dicts(request.cookies, __cookies__.get(request, {}))
 
 
 def get_cookie(key, default=None):
@@ -77,7 +77,7 @@ def handle_requests(request_prefix, on_error, rerender):
     @_app.route(request_prefix + '/<name>', methods=['GET', 'POST'])
     def __pyx__requests__(name):
         _error_status = 500
-        kw = dict(request.args) | dict(loads(request.data))
+        kw = merge_dicts(dict(request.args), dict(loads(request.data)))
         try:
             try:
                 req = get_request(get_session_id(), name)

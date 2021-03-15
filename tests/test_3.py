@@ -22,15 +22,13 @@ def func(tag):
 
 __pyx__ = func
 
-tags_set = {'p', '__pyx__', '__fragment__', 'select'}
+tags_set = {'p', '__fragment__', 'select', '__pyx__'}
 
 
 l = locals()
 for tag_name in tags_set:
-    if _tag := l.get(tag_name):
-        if tag_name[:2] == tag_name[-2:] == '__':
-            l[tag_name] = cached_tag.update(title=tag_name[2:-2])(_tag)
-        else:
-            l[tag_name] = cached_tag(_tag)
+    _tag = l.get(tag_name)
+    if _tag:
+        l[tag_name] = cached_tag(_tag)
     else:
         l[tag_name] = Tag(name=tag_name)(div)

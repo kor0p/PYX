@@ -2,6 +2,13 @@ import sys
 from typing import Callable
 
 
+def merge_dicts(d1, d2):
+    d = {}
+    d.update(d1)
+    d.update(d2)
+    return d
+
+
 def is_class(cls):
     return isinstance(cls, type)
 
