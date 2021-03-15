@@ -1,6 +1,10 @@
 # PYX
 ### A python-based realtime frontend framework
 
+## examples
+> ### pages: [first](https://pyx-tests.vercel.app/1), [second](https://pyx-tests.vercel.app/2), [third](https://pyx-tests.vercel.app/3)
+> ### composed: [tabs](https://pyx-tests.vercel.app/1)
+
 # use
 ```python
 # tests/test_1.py
@@ -12,14 +16,14 @@ def name(*, attr):
 
 def __pyx__():
     """entrypoint for pyx"""
-    return name(attr=1)
+    return name(attr=1, only_view_attr=True)
 ```
 will render
 ```html
 ...
 <body>
     <pyx>
-        <name attr="1">
+        <name attr="1" only_view_attr>
             Child
         </name>
     </pyx>
@@ -31,7 +35,7 @@ will render
 # tests/test_2.py
 from pyx import cached_tag, state, button, style, br, div
 
-@cached_tag.update(name='div')
+@cached_tag.update(title='div')
 def func(tag):
     tag.count = state(0)
     def increment():
@@ -103,7 +107,7 @@ will render
 # tests/test_3.pyx
 from pyx import Tag, state, select, p  # not necessary, really
 
-@cached_tag.update(name='div')
+@cached_tag.update(title='div')
 def func(tag):
     tag.selected = state(1)
     items = {0: 'first', 1: 'second', 2: 'third'}
@@ -140,57 +144,29 @@ will render
 </body>
 ...
 ```
-### or you can render all three at once
-```python
-# tests/app.py
-from pyx import render, run_app, __APP__
-
-import test_1
-import test_2
-import test_3
-
-
-@__APP__.route('/1')
-def test_1_route():
-    return render(test_1.__pyx__())
-
-
-@__APP__.route('/2')
-def test_2_route():
-    return render(test_2.__pyx__())
-
-
-@__APP__.route('/3')
-def test_3_route():
-    return render(test_3.__pyx__())
-
-
-run_app()
-
-```
 ### or merge them with tabs component
 ```python
 # tests/test_tabs.py
-from pyx import tabs, tab, style
-from flask import request
+from pyx import tabs, tab, style, __APP__ as app
+from pyx.utils.app import utils
 
-import tests.test_1 as test_1
-import tests.test_2 as test_2
-import tests.test_3 as test_3
+from tests import test_1, test_2, test_3
 
 
 def main():
+    query = utils.query
     tabs_list = [
-        dict(name='page 1', children=test_1.__pyx__(), url='/?page=1'),
-        dict(name='page 2', children=test_2.__pyx__(), url='/?page=2'),
-        dict(name='page 3', children=test_3.__pyx__(), url='/?page=3')
+        dict(name='page 1', children=test_1.__pyx__, url='/?page=1'),
+        dict(name='page 2', children=test_2.__pyx__, url='/?page=2'),
+        dict(name='page 3', children=test_3.__pyx__, url='/?page=3')
     ]
     return [
         tabs(
+            selected='page ' + query['page'] if 'page' in query else None,
             _class='content',
-            children=[tab(**kw) for kw in tabs_list]
+            children=[tab(**kw) for kw in tabs_list],
         ),
-        style(scoped=True, children='''
+        style(scoped=True, head=True, children='''
             ul {
                 list-style-type: none;
                 margin: 0;
@@ -237,6 +213,39 @@ def main():
 
 
 __pyx__ = main
+```
+### or you can render all three at once
+```python
+# tests/app_fastapi.py
+from pyx import render, run_app, __APP__
+
+from tests import test_1, test_2, test_3, test_tabs
+
+
+@__APP__.get('/1')
+def test_1_route():
+    return render(test_1)
+
+
+@__APP__.get('/2')
+def test_2_route():
+    return render(test_2)
+
+
+@__APP__.get('/3')
+def test_3_route():
+    return render(test_3)
+
+
+@__APP__.get('/tabs')
+def test_tabs_route():
+    return render(test_tabs)
+
+
+if __name__ == '__main__':
+    run_app(name='tests.app_fastapi')
+else:
+    app = __APP__  # for uvicorn / vercel
 ```
 ### `__PYX__=modulename python -m pyx.app`
 

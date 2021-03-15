@@ -1,27 +1,25 @@
 import os
-from pyx import DEFAULT_TAG, render
-from pyx import __APP__
+from pyx import DEFAULT_TAG, render, run_app
+from pyx.utils.app import __index__
 
 
 tags_set = []
 __pyx__ = lambda: ''
-__PYX_FILE__ = os.environ.get("__PYX__") or '.'
+DEBUG = os.environ.get('DEBUG', False)
+__PYX_FILE__ = os.environ.get('__PYX__', '.')
 try:
     exec(f'from {__PYX_FILE__} import *')
     exec(f'from {__PYX_FILE__} import __pyx__')
 except ImportError as e:
     print(e)
 
-__pyx__ = DEFAULT_TAG.update(name='pyx')(__pyx__)
+__pyx__ = DEFAULT_TAG.update(title='pyx')(__pyx__)
 
 
-rules = dict((r.rule, r.endpoint) for r in __APP__.url_map.iter_rules())
+@__index__
+def index():
+    return render(__pyx__)
 
-if '/' not in rules:
-    @__APP__.route('/')
-    def index():
-        return render(__pyx__())
-else:
-    print(f'index route exists, using {rules["/"]} endpoint')
 
-__APP__.run(debug=True)
+if __name__ == '__main__':
+    run_app(name=__PYX_FILE__, debug=DEBUG)

@@ -307,7 +307,7 @@ if __name__ == '__main__':
         return '''
 from pyx import *  # importing all: tag, default tags (div, select, tabs, etc.), ...
 from pyx import (  # importing extra data for pyx render
-    __requests__, __fragment__, __html__, __DOM__,
+    __fragment__,
 )
 %s
 tags_set = %s
@@ -317,10 +317,7 @@ l = locals()
 for tag_name in tags_set:
     _tag = l.get(tag_name)
     if _tag:
-        if tag_name[:2] == tag_name[-2:] == '__':
-            l[tag_name] = cached_tag.update(name=tag_name[2:-2])(_tag)
-        else:
-            l[tag_name] = cached_tag(_tag)
+        l[tag_name] = cached_tag(_tag)
     else:
         l[tag_name] = Tag(name=tag_name)(div)
 ''' % (feed, parser.tags_set)

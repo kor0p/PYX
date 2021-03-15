@@ -1,6 +1,6 @@
 window.ALL = () => $('*')
 window.__DOM__ = {
-    error: "error>*",
+    error: "error",
 }
 
 function unifyModifiers(str) {
@@ -63,7 +63,20 @@ $.fn.withAttr = function(pattern) {
 }
 
 window.printRequestError = function printRequestError(content) {
-    $(window.__DOM__.error).replaceWith(content ? content.html : '<render_error/>')
+    if (content) {
+        $(window.__DOM__.error).replaceWith(
+            `<error>${content.html}</error>`
+        )
+        const result = $(window.__DOM__.error).children()
+        const session = result.attr('session')
+        if (!document.cookie.includes(session)) {
+            window.location.reload()
+        }
+    } else {
+        $(window.__DOM__.error).replaceWith(
+            '<error><render_error/></error>'
+        )
+    }
 }
 
 window.getPyxId = function getPyxId (el) {
@@ -110,7 +123,7 @@ window.__request = async function __request(event_type, el, url, params) {
     try {
         window.printRequestError() // clear error
         const res = await fetch(
-            `pyx/${el.tagName.toLowerCase()}___${event_type}___${url}`,
+            `/pyx/${el.tagName.toLowerCase()}___${event_type}___${url}`,
             { method: 'POST', body: JSON.stringify(params) }
         )
         if (res.status !== 200) {

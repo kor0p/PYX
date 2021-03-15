@@ -1,14 +1,14 @@
 import re
 
 from ..utils import __extra__
-from ..main import cached_tag, Component, Tag
+from ..main import cached_tag, Tag
 
 
 DEFAULT_HEAD = '''
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="/static/js/pyx.js"></script>
-<script type="text/typescript" src="/static/js/test.ts"></script>
-<link type="text/css" rel="stylesheet" href="/static/css/pyx.css"/>
+<script type="text/javascript" src="/pyx/static/js/pyx.js"></script>
+<script type="text/typescript" src="/pyx/static/js/test.ts"></script>
+<link type="text/css" rel="stylesheet" href="/pyx/static/css/pyx.css"/>
 <style>
     {extra_css}
 </style>
@@ -31,17 +31,28 @@ DEFAULT_BODY = '''
 __extra__.js = ''
 __extra__.body = ''
 
-DEFAULT_TAG = cached_tag.update(is_in_dom=False, children_raw=True)
-VOID_TAG = DEFAULT_TAG.update(_void_tag=True)
-
-
-@DEFAULT_TAG.update(name='input')
-def inp(**k):
-    return
+DEFAULT_TAG: Tag = cached_tag.update(is_in_dom=False)
+MAIN_TAG: Tag = cached_tag.update(escape=False)
+VOID_TAG: Tag = DEFAULT_TAG.update(_void_tag=True)
 
 
 @Tag
-def python(tag, **k):
+def python(tag: Tag, **k):
+    """
+    <python>
+        # this code will be compiled as a function with current locals
+        # and the result of function will be returned to html
+        print("Hey, python tag!")
+        return 1 + 1
+    </python>
+
+    # in console
+    Hey, python tag!
+    # in browser
+    <python>
+        2
+    </python>
+    """
     __locals = {}
     __globals = globals().copy()
     if '_locals' in k:
@@ -53,44 +64,48 @@ def python(tag, **k):
         children = str(k.get('children', ''))
         tabs = re.search('\n?(?P<spaces> *)', children).group('spaces')
         code = re.sub('^' + tabs, '    ', children, flags=re.MULTILINE)
-    exec(f'''
+    exec(
+        f'''
 def __python__():
 {code}
-''', __globals, __locals)
+''',
+        __globals,
+        __locals,
+    )
     return __locals['__python__']()
 
 
 @DEFAULT_TAG
-def render_error(traceback, **k):
-    return f'ERROR:\n  traceback: {traceback}\n  kwargs: {k}'
+def render_error(traceback: str, **k) -> str:
+    children = f'ERROR:\n  traceback: {traceback}\n  kwargs: {k}'
+    print(children)
+    return children
 
 
-@DEFAULT_TAG
-class __fragment__:
-    def __init__(self, tag, **k):
-        self.children = tag.kw.pop('children')
+class __fragment__(**DEFAULT_TAG.extend):
+    def __init__(self, *, children=''):
+        self.children = children
 
-    def __render__(self, tag: Tag):
+    def __render__(self):
         return self.children
 
 
-@cached_tag.update(name='head', children_raw=True, escape=False)
+@MAIN_TAG
 def __head__(*, children=''):
-    return DEFAULT_HEAD.format(
-        extra_css=__extra__.css,
-        extra_head=__extra__.head,
-    ) + children
-
-
-@cached_tag.update(name='body', children_raw=True, escape=False)
-def __body__(*, children=''):
-    return children + DEFAULT_BODY.format(
-        extra_js=__extra__.js,
-        extra_body=__extra__.body,
+    return (
+        DEFAULT_HEAD.format(extra_css=__extra__.css, extra_head=__extra__.head,)
+        + children
     )
 
 
-@cached_tag.update(name='html', children_raw=True)
+@MAIN_TAG
+def __body__(*, children=''):
+    return children + DEFAULT_BODY.format(
+        extra_js=__extra__.js, extra_body=__extra__.body,
+    )
+
+
+@MAIN_TAG
 def __html__(*, head='', children=''):
     __extra__.css = ''
     __extra__.head = ''

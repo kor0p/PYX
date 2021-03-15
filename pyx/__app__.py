@@ -1,41 +1,65 @@
-import json
+from typing import Union
+from datetime import datetime
+
 from pyx.tags import render_error, __html__
-from pyx.main import __requests__, __DOM__
-from pyx.utils import merge_dicts
-from flask import Flask, request, jsonify, abort, make_response
+from pyx.utils.id import __PYX_ID__
+from pyx.utils.dom import set_dom, get_from_dom, get_session_id, del_dom
+from pyx.utils.app import (
+    create_app,
+    get_cookies,
+    set_cookie,
+    make_response,
+    handle_requests,
+)
+from pyx.utils import get_random_name
+from pyx.main import Tag, PYXModule
 
 
-__APP__ = Flask(__name__)
+__APP__ = create_app(__name__)
 
 
-def render(body: str):
-    return str(__html__(children=body))
+def render(body: Union[str, Tag, PYXModule]):
+    cookies = get_cookies()
+    _ids_to_remove = [
+        name for name in cookies.keys() if '__pyx_id' in name and __PYX_ID__ != name
+    ]
+    exists = get_session_id() is not None
+    pyx_id = None
+    if not exists:
+        pyx_id = get_random_name()
+        set_cookie(__PYX_ID__, pyx_id)
+        set_dom(pyx_id)
+
+    if not isinstance(body, Tag):
+        body = body.__pyx__
+    if callable(body):
+        body = body()
+    response = make_response(str(__html__(children=body)))
+    if exists and not _ids_to_remove:
+        return response
+
+    for _id in _ids_to_remove:
+        del_dom(_id)
+        set_cookie(_id, '', response, expires=0)
+    if not exists:
+        set_cookie(
+            __PYX_ID__, pyx_id, response, expires=datetime.strptime('2100', '%Y')
+        )
+    return response
 
 
-def _from_request(target, html):
-    return jsonify(dict(
-        target=target,
-        html=str(html)
-    ))
-
-
-@__APP__.route('/pyx/<name>', methods=['GET', 'POST'])
-def __pyx__requests__(name):
-    _error_status = 500
-    req = __requests__.get(name)
-    kw = merge_dicts(dict(request.args), dict(json.loads(request.data)))
-    try:
-        if not req:
-            _error_status = 400
-            raise ConnectionError('Bad Request')
-        _id = kw.pop('id')
-        print(req(**kw))
-        return _from_request(_id, __DOM__[_id]())
-    except Exception as error:
-        return abort(make_response(_from_request('error', render_error(traceback=str(error), **kw)), 500))
+handle_requests(
+    '/pyx',
+    lambda r, kw: render_error(traceback=r, session=__PYX_ID__, **kw),
+    lambda _id: get_from_dom(_id)(),
+)
 
 
 def run_app(*a, **k):
+    import os
+    k.setdefault('port', 5000)
+    app_name = os.environ.get('__APP__')
+    if app_name == 'Flask':
+        if 'name' in k:
+            __APP__.import_name = k.pop('name')
     return __APP__.run(*a, **(k or dict(debug=True)))
-
-# TODO: add FastAPI app

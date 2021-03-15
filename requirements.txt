@@ -1,2 +1,4 @@
 # python version >= 3.8
 Flask>=1
+axblack>=20201112
+pre-commit>=2.10.1
