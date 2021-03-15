@@ -4,7 +4,7 @@ from .default import cached_tag, __extra__
 from ..utils import get_random_name
 
 
-class style(**cached_tag.extend):
+class style(**cached_tag.extend, cache=True):
     def __init__(self, *_, lang='css', scoped=False, head=False, children=''):
         if scoped:
             scoped, children = self._scope_style(children)

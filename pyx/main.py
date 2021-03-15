@@ -441,5 +441,5 @@ class Component:
             return super().__delattr__(key)
 
 
-cached_tag = Tag(cache=True)
+cached_tag = Tag(cache=False)
 

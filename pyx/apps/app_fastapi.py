@@ -29,12 +29,12 @@ class HashableRequest(Request):
         for i, k in self.scope.items():
             try:
                 if isinstance(k, dict):
-                    result.append((i, tuple(k.items())))
+                    result.append((str(i), tuple(((str(i), str(j)) for i, j in k.items()))))
                 else:
-                    result.append((i, tuple(k)))
+                    result.append((str(i), tuple(k)))
             except:
                 pass
-        return hash(tuple(result))
+        return hash(str(result))
 
 
 request: Request = HashableRequest({'type': 'http', 'headers': ''})
