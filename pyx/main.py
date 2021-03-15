@@ -51,7 +51,7 @@ class Tag:
     __kw: JSON = JSON()
     hash: Optional[int] = None
     session: Optional[str] = None
-    children: Union[List[str, ClassComponent]] = ''
+    children: List[Union[str, ClassComponent]] = ''
     _cached: dict = {}
     _underscore_attributes = keyword.kwlist  # async, class, for, etc.
     _options: Options = Options()

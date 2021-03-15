@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Callable, TypeVar, Dict
+from typing import Optional, Callable, TypeVar, List, Dict
 
 Response = TypeVar('Response')
 APP = TypeVar('APP')
@@ -15,8 +15,7 @@ class RequestError(ConnectionError):
     pass
 
 
-class Route(Callable):
-    pass
+Route = Callable
 
 
 TAG = Callable[[], str]
