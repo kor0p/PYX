@@ -234,7 +234,7 @@ class Tag:
     def __repr__(self):
         return str(self.name) + '(' + ', '.join(str(k) + '=' + str(v) for k, v in self.kw.items()) + ')'
 
-    def __render__(self, children=None, *, get_attrs=False):
+    def __render__(self, children=None, *_, get_attrs=False):
         """
         class World(**Tag.extend):
             def __init__(self, **attrs):

@@ -54,7 +54,7 @@ class RequestError(ConnectionError):
     pass
 
 
-def _run(*, name, **kwargs):
+def _run(*_, name, **kwargs):
     kwargs.setdefault('host', '0.0.0.0')
     kwargs.setdefault('reload', True)
     kwargs.setdefault('debug', False)

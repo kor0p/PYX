@@ -5,7 +5,7 @@ from .script import script
 
 
 @DEFAULT_TAG.update(is_in_dom=True)
-def tab(*, name, children, active=None, on_click=None, url=None, href=None):
+def tab(*_, name, children, active=None, on_click=None, url=None, href=None):
     return li(children=(
         a(children=name, href=href) if href else name
     ))

@@ -63,7 +63,7 @@ def map_attrs(attrs, tab):
 class PyxHTMLParser(HTMLParser):
     CDATA_CONTENT_ELEMENTS = ("script", "style", "python")
 
-    def __init__(self, /, **k):
+    def __init__(self, **k):
         super().__init__(**k)
         self.data = ''
         self.temp_data = []

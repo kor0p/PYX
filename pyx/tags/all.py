@@ -3,585 +3,585 @@ from ..utils.children import ChildType
 
 
 @DEFAULT_TAG
-def a(href=None, *, children: ChildType = '') -> ChildType:
+def a(href=None, *_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def abbr(*, children: ChildType = '') -> ChildType:
+def abbr(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def acronym(*, children: ChildType = '') -> ChildType:
+def acronym(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def address(*, children: ChildType = '') -> ChildType:
+def address(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def applet(*, children: ChildType = '') -> ChildType:
+def applet(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def area(*, children: ChildType = '') -> ChildType:
+def area(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def article(*, children: ChildType = '') -> ChildType:
+def article(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def aside(*, children: ChildType = '') -> ChildType:
+def aside(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def audio(*, children: ChildType = '') -> ChildType:
+def audio(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def b(*, children: ChildType = '') -> ChildType:
+def b(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def base(*, children: ChildType = '') -> ChildType:
+def base(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def basefont(*, children: ChildType = '') -> ChildType:
+def basefont(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def bdi(*, children: ChildType = '') -> ChildType:
+def bdi(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def bdo(*, children: ChildType = '') -> ChildType:
+def bdo(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def big(*, children: ChildType = '') -> ChildType:
+def big(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def blockquote(*, children: ChildType = '') -> ChildType:
+def blockquote(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def br(*, children: ChildType = '') -> ChildType:
+def br(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG.update(is_in_dom=True)
-def button(*, children: ChildType = '') -> ChildType:
+def button(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def canvas(*, children: ChildType = '') -> ChildType:
+def canvas(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def caption(*, children: ChildType = '') -> ChildType:
+def caption(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def center(*, children: ChildType = '') -> ChildType:
+def center(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def cite(*, children: ChildType = '') -> ChildType:
+def cite(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def code(*, children: ChildType = '') -> ChildType:
+def code(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def col(*, children: ChildType = '') -> ChildType:
+def col(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def colgroup(*, children: ChildType = '') -> ChildType:
+def colgroup(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def data(*, children: ChildType = '') -> ChildType:
+def data(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def datalist(*, children: ChildType = '') -> ChildType:
+def datalist(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def dd(*, children: ChildType = '') -> ChildType:
+def dd(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG.update(title='del')
-def _del(*, children: ChildType = '') -> ChildType:
+def _del(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def details(*, children: ChildType = '') -> ChildType:
+def details(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def dfn(*, children: ChildType = '') -> ChildType:
+def dfn(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def dialog(*, children: ChildType = '') -> ChildType:
+def dialog(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def dir(*, children: ChildType = '') -> ChildType:
+def dir(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def div(*, children: ChildType = '') -> ChildType:
+def div(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def dl(*, children: ChildType = '') -> ChildType:
+def dl(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def dt(*, children: ChildType = '') -> ChildType:
+def dt(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def em(*, children: ChildType = '') -> ChildType:
+def em(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def embed(*, children: ChildType = '') -> ChildType:
+def embed(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def fieldset(*, children: ChildType = '') -> ChildType:
+def fieldset(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def figcaption(*, children: ChildType = '') -> ChildType:
+def figcaption(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def figure(*, children: ChildType = '') -> ChildType:
+def figure(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def font(*, children: ChildType = '') -> ChildType:
+def font(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def footer(*, children: ChildType = '') -> ChildType:
+def footer(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def form(*, children: ChildType = '') -> ChildType:
+def form(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def frame(*, children: ChildType = '') -> ChildType:
+def frame(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def frameset(*, children: ChildType = '') -> ChildType:
+def frameset(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def h1(*, children: ChildType = '') -> ChildType:
+def h1(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def h2(*, children: ChildType = '') -> ChildType:
+def h2(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def h3(*, children: ChildType = '') -> ChildType:
+def h3(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def h4(*, children: ChildType = '') -> ChildType:
+def h4(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def h5(*, children: ChildType = '') -> ChildType:
+def h5(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def h6(*, children: ChildType = '') -> ChildType:
+def h6(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def header(*, children: ChildType = '') -> ChildType:
+def header(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def hr(*, children: ChildType = '') -> ChildType:
+def hr(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def i(*, children: ChildType = '') -> ChildType:
+def i(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def iframe(*, children: ChildType = '') -> ChildType:
+def iframe(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def img(*, children: ChildType = '') -> ChildType:
+def img(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG.update(title='input')
-def _input(*, children: ChildType = '') -> ChildType:
+def _input(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def ins(*, children: ChildType = '') -> ChildType:
+def ins(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def kbd(*, children: ChildType = '') -> ChildType:
+def kbd(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def label(*, children: ChildType = '') -> ChildType:
+def label(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def legend(*, children: ChildType = '') -> ChildType:
+def legend(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def li(*, children: ChildType = '') -> ChildType:
+def li(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def link(*, children: ChildType = '') -> ChildType:
+def link(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def main(*, children: ChildType = '') -> ChildType:
+def main(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG.update(title='map')
-def _map(*, children: ChildType = '') -> ChildType:
+def _map(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def mark(*, children: ChildType = '') -> ChildType:
+def mark(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def meta(*, children: ChildType = '') -> ChildType:
+def meta(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def meter(*, children: ChildType = '') -> ChildType:
+def meter(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def nav(*, children: ChildType = '') -> ChildType:
+def nav(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def noframes(*, children: ChildType = '') -> ChildType:
+def noframes(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def noscript(*, children: ChildType = '') -> ChildType:
+def noscript(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG.update(title='object')
-def _object(*, children: ChildType = '') -> ChildType:
+def _object(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def ol(*, children: ChildType = '') -> ChildType:
+def ol(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def optgroup(*, children: ChildType = '') -> ChildType:
+def optgroup(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def option(*, children: ChildType = '') -> ChildType:
+def option(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def output(*, children: ChildType = '') -> ChildType:
+def output(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def p(*, children: ChildType = '') -> ChildType:
+def p(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def param(*, children: ChildType = '') -> ChildType:
+def param(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def picture(*, children: ChildType = '') -> ChildType:
+def picture(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def pre(*, children: ChildType = '') -> ChildType:
+def pre(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def progress(*, children: ChildType = '') -> ChildType:
+def progress(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def q(*, children: ChildType = '') -> ChildType:
+def q(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def rp(*, children: ChildType = '') -> ChildType:
+def rp(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def rt(*, children: ChildType = '') -> ChildType:
+def rt(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def ruby(*, children: ChildType = '') -> ChildType:
+def ruby(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def s(*, children: ChildType = '') -> ChildType:
+def s(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def samp(*, children: ChildType = '') -> ChildType:
+def samp(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def section(*, children: ChildType = '') -> ChildType:
+def section(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def select(*, children: ChildType = '') -> ChildType:
+def select(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def small(*, children: ChildType = '') -> ChildType:
+def small(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def source(*, children: ChildType = '') -> ChildType:
+def source(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def span(*, children: ChildType = '') -> ChildType:
+def span(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def strike(*, children: ChildType = '') -> ChildType:
+def strike(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def strong(*, children: ChildType = '') -> ChildType:
+def strong(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def sub(*, children: ChildType = '') -> ChildType:
+def sub(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def summary(*, children: ChildType = '') -> ChildType:
+def summary(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def sup(*, children: ChildType = '') -> ChildType:
+def sup(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def svg(*, children: ChildType = '') -> ChildType:
+def svg(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def table(*, children: ChildType = '') -> ChildType:
+def table(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def tbody(*, children: ChildType = '') -> ChildType:
+def tbody(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def td(*, children: ChildType = '') -> ChildType:
+def td(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def template(*, children: ChildType = '') -> ChildType:
+def template(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def textarea(*, children: ChildType = '') -> ChildType:
+def textarea(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def tfoot(*, children: ChildType = '') -> ChildType:
+def tfoot(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def th(*, children: ChildType = '') -> ChildType:
+def th(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def thead(*, children: ChildType = '') -> ChildType:
+def thead(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def time(*, children: ChildType = '') -> ChildType:
+def time(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def title(*, children: ChildType = '') -> ChildType:
+def title(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def tr(*, children: ChildType = '') -> ChildType:
+def tr(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def track(*, children: ChildType = '') -> ChildType:
+def track(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def tt(*, children: ChildType = '') -> ChildType:
+def tt(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def u(*, children: ChildType = '') -> ChildType:
+def u(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def ul(*, children: ChildType = '') -> ChildType:
+def ul(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def var(*, children: ChildType = '') -> ChildType:
+def var(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @DEFAULT_TAG
-def video(*, children: ChildType = '') -> ChildType:
+def video(*_, children: ChildType = '') -> ChildType:
     return children
 
 
 @VOID_TAG
-def wbr(*, children: ChildType = '') -> ChildType:
+def wbr(*_, children: ChildType = '') -> ChildType:
     return children

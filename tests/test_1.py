@@ -1,7 +1,7 @@
 from pyx import Tag
 
 @Tag
-def name(*, attr):
+def name(*_, attr):
     return 'Child'
 
 def __pyx__():

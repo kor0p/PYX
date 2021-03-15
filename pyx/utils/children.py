@@ -17,7 +17,7 @@ class ChildrenComponent(list):
         super().__init__((args, ))
 
     @staticmethod
-    def escape(children, _escape=True, /):
+    def escape(children, _escape=True):
         if not isinstance(children, ChildrenComponent):
             return children
 

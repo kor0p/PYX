@@ -36,7 +36,7 @@ class SelectItems:
 
 
 @cached_tag
-def option(*, label, **attrs):
+def option(*_, label, **attrs):
     return label
 
 

@@ -83,7 +83,7 @@ def render_error(traceback: str, **k) -> str:
 
 
 class __fragment__(**DEFAULT_TAG.extend):
-    def __init__(self, *, children=''):
+    def __init__(self, *_, children=''):
         self.children = children
 
     def __render__(self):
@@ -91,7 +91,7 @@ class __fragment__(**DEFAULT_TAG.extend):
 
 
 @MAIN_TAG
-def __head__(*, children=''):
+def __head__(*_, children=''):
     return (
         DEFAULT_HEAD.format(extra_css=__extra__.css, extra_head=__extra__.head,)
         + children
@@ -99,14 +99,14 @@ def __head__(*, children=''):
 
 
 @MAIN_TAG
-def __body__(*, children=''):
+def __body__(*_, children=''):
     return children + DEFAULT_BODY.format(
         extra_js=__extra__.js, extra_body=__extra__.body,
     )
 
 
 @MAIN_TAG
-def __html__(*, head='', children=''):
+def __html__(*_, head='', children=''):
     __extra__.css = ''
     __extra__.head = ''
     __extra__.js = ''
