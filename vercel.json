@@ -1,13 +1,13 @@
 {
     "version": 2,
     "builds": [
-        { "src": "./tests/app.py", "use": "@vercel/python", "config": { "maxLambdaSize": "9mb" } },
+        { "src": "./tests/app_fastapi.py", "use": "@vercel/python", "config": { "maxLambdaSize": "9mb" } },
         { "src": "./pyx/**", "use": "@vercel/static", "config": { "maxLambdaSize": "9mb" } }
     ],
     "routes": [
         { "src": "/static/(?<path>.*)", "dest": "/pyx/static/$path" },
-        { "src": "/pyx/(?<callback>.*)", "dest": "/tests/app.py" },
-        { "src": "/(?<n>\\d*)|(tabs)", "dest": "/tests/app.py" },
+        { "src": "/pyx/(?<callback>.*)", "dest": "/tests/app_fastapi.py" },
+        { "src": "/(?<n>\\d*)|(tabs)", "dest": "/tests/app_fastapi.py" },
         { "src": "/.*", "dest": "/"}
     ]
 }
