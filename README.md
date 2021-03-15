@@ -1,6 +1,10 @@
 # PYX
 ### A python-based realtime frontend framework
 
+## examples
+> ### pages: [first](https://pyx-tests.vercel.app/1), [second](https://pyx-tests.vercel.app/2), [third](https://pyx-tests.vercel.app/3)
+> ### composed: [tabs](https://pyx-tests.vercel.app/1)
+
 # use
 ```python
 # tests/test_1.py
