@@ -19,7 +19,7 @@ class Route(Callable):
     pass
 
 
-TAG = Callable[..., str]
+TAG = Callable[[], str]
 SALT_ID = str
 
 
@@ -30,7 +30,7 @@ set_cookie: Callable[[str, str, Optional[Response]], Response]
 create_request: Callable[[SALT_ID, str, TAG], None]
 get_request: Callable[[SALT_ID, str], Optional[TAG]]
 handle_requests: Callable[
-    [str, Callable[[str, dict], str], Callable[[str], str]], Route[..., Response]
+    [str, Callable[[str, dict], str], Callable[[str], str]], Route[[], Response]
 ]
 __index__: Callable[[Route], None]
 
