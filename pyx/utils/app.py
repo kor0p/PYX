@@ -60,6 +60,7 @@ __all__ = [
     'get_cookies',
     'get_cookie',
     'set_cookie',
+    'get_session_id',
     'create_request',
     'get_request',
     'handle_requests',

@@ -5,6 +5,7 @@ from types import ModuleType
 
 from .utils import ChildrenComponent, is_class, JSON, state, set_to_dom, get_session_id
 from .utils.app import create_request
+from .utils.dom import set_to_dom, get_session_id
 
 T = TypeVar('T', bound='Tag')
 C = TypeVar('C', bound='Component')

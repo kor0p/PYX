@@ -1,13 +1,6 @@
-from .rand import get_random_name
-from .app import get_cookie, SessionError
+from .app import get_session_id, SessionError
 
 __sessions__ = {}
-
-__PYX_ID__ = f'__pyx_id_{get_random_name()}__'
-
-
-def get_session_id():
-    return get_cookie(__PYX_ID__)
 
 
 def get_dom():

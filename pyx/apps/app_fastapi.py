@@ -10,6 +10,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 
 from pyx.utils import classproperty
+from pyx.utils.id import __PYX_ID__
+# you can import any pyx.utils,
+# except pyx.utils.app and pyx.utils.dom,
+# because it raises ImportError('... (most likely due to a circular import) ...')
 
 make_response = HTMLResponse
 
@@ -34,6 +38,12 @@ class HashableRequest(Request):
 
 
 request: Request = HashableRequest({'type': 'http', 'headers': ''})
+
+
+def _set_request(req):
+    global request
+    request = req
+    request.__class__ = HashableRequest
 
 
 class SessionError(ConnectionError):
@@ -65,6 +75,11 @@ def create_app(name='<pyx>', **kwargs):
         ),
         name='static',
     )
+
+    @_app.middleware("http")
+    async def _setting_request_to_scope(req: Request, call_next):
+        _set_request(req)
+        return await call_next(req)
     return _app
 
 
@@ -88,6 +103,10 @@ def set_cookie(key, value, response: Response = None, **kwargs):
     return response
 
 
+def get_session_id():
+    return get_cookie(__PYX_ID__)
+
+
 def create_request(salt_id, key, value):
     if salt_id not in __requests__:
         __requests__[salt_id] = {}
@@ -105,16 +124,14 @@ def _from_request(target, html):
 def handle_requests(request_prefix, on_error, rerender):
     @_app.get(request_prefix + '/{name}')
     @_app.post(request_prefix + '/{name}')
-    async def __pyx__requests__(__request__: Request, name: str):
-        global request
-        request = HashableRequest(__request__)
+    async def __pyx__requests__(req: Request, name: str):
         _error_status = 500
-        kw = dict(__request__.query_params) | dict(loads(await __request__.body()))
+        kw = dict(req.query_params) | dict(loads(await req.body()))
         try:
             try:
-                req = get_request(_app._get_session_id(), name)
+                req = get_request(get_session_id(), name)
             except SessionError:
-                raise SessionError(_app.__PYX_ID__)
+                raise SessionError(__PYX_ID__)
             if not req:
                 _error_status = 400
                 raise RequestError('Bad Request')
@@ -133,14 +150,7 @@ def __index__(func):
     rules = dict((r.path, r.endpoint) for r in _app.routes if hasattr(r, 'endpoint'))
 
     if '/' not in rules:
-        @_app.get('/')
-        @_app.post('/')
-        def index(_request: Request):
-            global request
-            request = HashableRequest(_request)
-            r = func()
-            return r
-        return index
+        return _app.get('/')(_app.post('/')(func))
     else:
         print(f'index route exists, using {rules["/"]} endpoint')
 
@@ -179,6 +189,7 @@ __all__ = [
     'get_cookies',
     'get_cookie',
     'set_cookie',
+    'get_session_id',
     'create_request',
     'get_request',
     'handle_requests',

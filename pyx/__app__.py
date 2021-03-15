@@ -2,7 +2,8 @@ from typing import Union
 from datetime import datetime
 
 from pyx.tags import render_error, __html__
-from pyx.utils.dom import set_dom, get_from_dom, __PYX_ID__, get_session_id, del_dom
+from pyx.utils.id import __PYX_ID__
+from pyx.utils.dom import set_dom, get_from_dom, get_session_id, del_dom
 from pyx.utils.app import (
     create_app,
     get_cookies,
@@ -15,8 +16,6 @@ from pyx.main import Tag, PYXModule
 
 
 __APP__ = create_app(__name__)
-__APP__.__PYX_ID__ = __PYX_ID__
-__APP__._get_session_id = get_session_id
 
 
 def render(body: Union[str, Tag, PYXModule]):

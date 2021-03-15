@@ -5,7 +5,11 @@ from urllib import parse
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
 
-from pyx.utils import staticproperty, join
+from pyx.utils import staticproperty
+from pyx.utils.id import __PYX_ID__
+# you can import any pyx.utils,
+# except pyx.utils.app and pyx.utils.dom,
+# because it raises ImportError('... (most likely due to a circular import) ...')
 
 __cookies__ = {}
 __requests__ = {}
@@ -51,6 +55,10 @@ def set_cookie(key, value, response=None, **kwargs):
     return response
 
 
+def get_session_id():
+    return get_cookie(__PYX_ID__)
+
+
 def create_request(salt_id, key, value):
     if salt_id not in __requests__:
         __requests__[salt_id] = {}
@@ -72,9 +80,9 @@ def handle_requests(request_prefix, on_error, rerender):
         kw = dict(request.args) | dict(loads(request.data))
         try:
             try:
-                req = get_request(_app._get_session_id(), name)
+                req = get_request(get_session_id(), name)
             except SessionError:
-                raise SessionError(_app.__PYX_ID__)
+                raise SessionError(__PYX_ID__)
             if not req:
                 _error_status = 400
                 raise RequestError('Bad Request')
@@ -125,6 +133,7 @@ __all__ = [
     'get_cookies',
     'get_cookie',
     'set_cookie',
+    'get_session_id',
     'create_request',
     'get_request',
     'handle_requests',
