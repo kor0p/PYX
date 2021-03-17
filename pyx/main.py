@@ -6,6 +6,7 @@ from types import ModuleType
 from .utils import ChildrenComponent, is_class, JSON, state
 from .utils.app import create_request
 from .utils.dom import set_to_dom, get_session_id
+from .utils.tags import parse_tag_name
 
 T = TypeVar('T', bound='Tag')
 C = TypeVar('C', bound='Component')
@@ -109,13 +110,7 @@ class Tag:
         self.__kw = JSON()
         if f:
             k.setdefault('title', f.__name__)
-            name = k['title']
-            # def __pyx__(): ... -> <pyx></pyx>
-            # class __html__: ... -> <html></html>
-            if name[:2] == name[-2:] == '__':
-                k['title'] = name[2:-2]
-            else:
-                k['title'] = name
+            k['title'] = parse_tag_name(k['title'])
 
         self._options = Options(**(self._options | k))
 
