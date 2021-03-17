@@ -1,5 +1,6 @@
 from .all import li, ul, div, a
-from ..utils import state, ChildrenComponent
+from ..utils.state import state
+from ..utils.children import ChildrenComponent
 from .default import DEFAULT_TAG
 from .script import script
 

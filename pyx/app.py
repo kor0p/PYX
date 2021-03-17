@@ -1,5 +1,6 @@
 import os
-from pyx import DEFAULT_TAG, render, run_app
+from pyx.tags.default import DEFAULT_TAG
+from pyx.__app__ import render, run_app
 from pyx.utils.app import __index__
 
 

@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..utils import JSON
+from ..utils.JSON import JSON
 from ..main import cached_tag, Component
 
 

@@ -5,7 +5,7 @@ from urllib import parse
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
 
-from pyx.utils import staticproperty
+from pyx.utils.core import staticproperty
 from pyx.utils.id import __PYX_ID__
 # you can import any pyx.utils,
 # except pyx.utils.app and pyx.utils.dom,

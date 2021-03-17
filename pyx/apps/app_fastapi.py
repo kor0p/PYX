@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 
-from pyx.utils import classproperty
+from pyx.utils.core import classproperty
 from pyx.utils.id import __PYX_ID__
 # you can import any pyx.utils,
 # except pyx.utils.app and pyx.utils.dom,

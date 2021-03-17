@@ -3,10 +3,13 @@ import keyword
 from typing import Union, Optional, Callable, TypeVar
 from types import ModuleType
 
-from .utils import ChildrenComponent, is_class, JSON, state
 from .utils.app import create_request
+from .utils.children import ChildrenComponent
+from .utils.core import is_class
 from .utils.dom import set_to_dom, get_session_id
 from .utils.tags import parse_tag_name
+from .utils.JSON import JSON
+from .utils.state import state
 
 T = TypeVar('T', bound='Tag')
 C = TypeVar('C', bound='Component')

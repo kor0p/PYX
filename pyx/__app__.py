@@ -1,7 +1,7 @@
 from typing import Union
 from datetime import datetime
 
-from pyx.tags import render_error, __html__
+from pyx.tags.default import render_error, __html__
 from pyx.utils.id import __PYX_ID__
 from pyx.utils.dom import set_dom, get_from_dom, get_session_id, del_dom
 from pyx.utils.app import (
@@ -11,7 +11,7 @@ from pyx.utils.app import (
     make_response,
     handle_requests,
 )
-from pyx.utils import get_random_name
+from pyx.utils.rand import get_random_name
 from pyx.main import Tag, PYXModule
 
 

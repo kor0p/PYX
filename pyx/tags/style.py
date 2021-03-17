@@ -1,7 +1,7 @@
 import re
 
 from .default import cached_tag, __extra__
-from ..utils import get_random_name
+from ..utils.rand import get_random_name
 
 
 class style(**cached_tag.extend):
