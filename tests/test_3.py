@@ -11,7 +11,9 @@ def func(tag):
     items = {0: 'first', 1: 'second', 2: 'third'}
     def _select(value):
         tag.selected = int(value)
-    return __fragment__(**{"children": [p(**{"children": [f"""Key: {tag.selected}"""]}), p(**{
+    return __fragment__(**{"children": [p(**{"children": [f"""Key: {tag.selected}"""]}), style(**{
+        "src": "/pyx/static/css/pyx.css",
+        }), p(**{
         "@click.right:prevent": lambda: 'GOT IT',
         "children": [f"""Value: {items[tag.selected]}"""]}), select(**{
         "items": items,
@@ -28,9 +30,6 @@ tags_set = {'p', '__pyx__', '__fragment__', 'select'}
 l = locals()
 for tag_name in tags_set:
     if _tag := l.get(tag_name):
-        if tag_name[:2] == tag_name[-2:] == '__':
-            l[tag_name] = cached_tag.update(title=tag_name[2:-2])(_tag)
-        else:
-            l[tag_name] = cached_tag(_tag)
+        l[tag_name] = cached_tag(_tag)
     else:
         l[tag_name] = Tag(name=tag_name)(div)

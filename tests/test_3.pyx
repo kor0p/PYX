@@ -8,6 +8,7 @@ def func(tag):
         tag.selected = int(value)
     return <>
         <p>Key: {tag.selected}</p>
+        <style src='/pyx/static/css/pyx.css'/>
         <p @click.right:prevent={lambda: 'GOT IT'}>Value: {items[tag.selected]}</p>
         <select
             items={items}

@@ -5,7 +5,7 @@ from .core import join, escape
 
 class ChildrenComponent(list):
     def __init__(self, args: Optional[list] = None):
-        if not args and not len(args):
+        if args is None or (not args and not len(args)):
             super().__init__()
             return
         try:

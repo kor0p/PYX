@@ -1,6 +1,7 @@
 import re
 
 from ..utils import __extra__
+from ..utils.children import ChildrenComponent
 from ..main import cached_tag, Tag
 
 
@@ -15,8 +16,8 @@ DEFAULT_HEAD = '''
 {extra_head}
 '''
 
-__extra__.css = ''
-__extra__.head = ''
+__extra__.css = ChildrenComponent()
+__extra__.head = ChildrenComponent()
 
 DEFAULT_BODY = '''
 <error>
@@ -28,8 +29,8 @@ DEFAULT_BODY = '''
 {extra_body}
 '''
 
-__extra__.js = ''
-__extra__.body = ''
+__extra__.js = ChildrenComponent()
+__extra__.body = ChildrenComponent()
 
 DEFAULT_TAG: Tag = cached_tag.update(is_in_dom=False)
 MAIN_TAG: Tag = cached_tag.update(escape=False)
@@ -107,10 +108,10 @@ def __body__(*, children=''):
 
 @MAIN_TAG
 def __html__(*, head='', children=''):
-    __extra__.css = ''
-    __extra__.head = ''
-    __extra__.js = ''
-    __extra__.body = ''
+    __extra__.css = ChildrenComponent()
+    __extra__.head = ChildrenComponent()
+    __extra__.js = ChildrenComponent()
+    __extra__.body = ChildrenComponent()
     _body = __body__(children=str(children))
     _head = __head__(children=str(head))
     return [_head, _body]
