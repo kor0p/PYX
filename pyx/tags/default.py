@@ -54,10 +54,12 @@ def python(tag: Tag, **k):
         2
     </python>
     """
-    __locals = {}
-    __globals = globals().copy()
+    __locals = locals()
+    __globals = globals()
     if '_locals' in k:
-        __globals.update(tag.kw.pop('_locals'))
+        __locals = tag['_locals':]
+    if '_globals' in k:
+        __globals = tag['_globals':]
     if 'src' in k:
         with open(k['src'], 'r') as src:
             code = '\n'.join('    ' + line for line in src.readlines())

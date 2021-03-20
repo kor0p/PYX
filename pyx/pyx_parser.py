@@ -221,6 +221,7 @@ class PyxHTMLParser(HTMLParser):
             self.temp_text = ''
         if tag == 'python':
             attrs.append(('_locals', '{locals()}'))
+            attrs.append(('_globals', '{globals()}'))
         self.temp_data.append(map_attrs(attrs, tab))
         if len(self.temp_children) == len(self.tags) and len(self.temp_children) > 1:
             data = self.temp_children.pop()
