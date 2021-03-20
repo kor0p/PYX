@@ -58,6 +58,7 @@ class Tag:
     children: ChildrenComponent[Union[str, ClassComponent]] = ''
     _cached: dict = {}
     _underscore_attributes = keyword.kwlist  # async, class, for, etc.
+    _tag_argspec: Optional[inspect.FullArgSpec] = None
     _options: Options = Options()
 
     def __len__(self):
@@ -119,6 +120,8 @@ class Tag:
 
         self.f = Component(f)
         self.f.__tag__ = self
+        self._tag_argspec = inspect.getfullargspec(self.f.__f__)
+
         try:
             self.session = get_session_id()
         except RuntimeError:
@@ -195,7 +198,7 @@ class Tag:
                 return cached
 
         this = self.clone()
-        tag_argspec = inspect.getfullargspec(this.f.__f__)
+        tag_argspec = self._tag_argspec or inspect.getfullargspec(this.f.__f__)
         _is_class = self._is_class
         args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
