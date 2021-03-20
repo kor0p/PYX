@@ -115,12 +115,12 @@ class Tag:
         if f:
             k.setdefault('title', f.__name__)
             k['title'] = parse_tag_name(k['title'])
+            self._tag_argspec = inspect.getfullargspec(f)
 
         self._options = Options(**(self._options | k))
 
         self.f = Component(f)
         self.f.__tag__ = self
-        self._tag_argspec = inspect.getfullargspec(self.f.__f__)
 
         try:
             self.session = get_session_id()
@@ -198,7 +198,9 @@ class Tag:
                 return cached
 
         this = self.clone()
-        tag_argspec = self._tag_argspec or inspect.getfullargspec(this.f.__f__)
+        tag_argspec = self._tag_argspec
+        if not tag_argspec:
+            tag_argspec = self._tag_argspec = inspect.getfullargspec(this.f.__f__)
         _is_class = self._is_class
         args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
