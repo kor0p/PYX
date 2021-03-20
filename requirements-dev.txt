@@ -1,0 +1,3 @@
+-r requirements-FastAPI.txt
+-r requirements-Flask.txt
+libsass>=0.20.1  # for parsing scss to css

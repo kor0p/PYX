@@ -4,6 +4,14 @@ from .default import cached_tag, __extra__
 from ..utils.rand import get_random_name
 from .all import link
 
+try:
+    import sass
+except ImportError:
+    sass = None  # if in projects not using scss/sass
+
+
+_pyx_style_attr = 'pyx-style'
+
 
 class style(**cached_tag.extend):
     def __init__(self, *, src=None, **kwargs):
@@ -11,17 +19,21 @@ class style(**cached_tag.extend):
         self.kwargs = kwargs
         if self.src is not None:
             return
-        if kwargs.get('scoped'):
-            scoped, children = self._scope_style(kwargs.get('children'))
-            kwargs.update(dict(scoped=scoped, children=children))
 
-    def _scope_style(self, styles):
+        if kwargs.get('lang') in ('scss', 'sass'):
+            self.kwargs['children'] = sass.compile(
+                string=kwargs.get('children'),
+                **kwargs.get('sass_options', {})
+            )
+
+    def _scope_style(self, styles, *, style_name=None):
         """https://stackoverflow.com/a/32134836/8851903"""
-        style_name = get_random_name()
-        scoped_data = f'pyx-style="{style_name}"'
+        if not style_name:
+            style_name = get_random_name()
+        scoped_data = f'{_pyx_style_attr}="{style_name}"'
         css_rules = re.findall(r'[^{]+{[^}]*}', styles, re.MULTILINE)
         return (
-            ('pyx-style', style_name),
+            (_pyx_style_attr, style_name),
             '\n'.join(
                 ','.join(
                     f'[{scoped_data}] {item}'
@@ -39,9 +51,17 @@ class style(**cached_tag.extend):
                 return _link
             __extra__.head.append(_link)
             return
-        attr, style_name = self.kwargs.get('scoped')
-        self.parent.kw[attr] = style_name
+
+        children = self.kwargs.get('children')
+
+        if self.kwargs.get('scoped'):
+            if style_name := self.parent.kw.get(_pyx_style_attr):
+                _, children = self._scope_style(children, style_name=style_name)
+            else:
+                (attr, style_name), children = self._scope_style(children)
+                self.parent[_pyx_style_attr] = style_name
+
         if self.kwargs.get('head', False):
-            __extra__.css.append(self.kwargs.get('children'))
+            __extra__.css.append(children)
         else:
-            return super().__render__(self.kwargs.get('children'))
+            return super().__render__(children)

@@ -10,17 +10,22 @@ def func(tag):
     return [
         div(_class='text', children=f'Count: {tag.count}'),
         br(),
-        button(_class='button', on_click=increment, children="++"),
-        br(),
-        button(_class='button', on_click=decrement, children="––"),
-        style(scoped=True, children='''
-            .text, .button {
-                font-size: 1rem;
+        button(_class='button', on_click=increment, children="+ +"),
+        button(_class='button', on_click=decrement, children="– –"),
+        style(scoped=True, lang='scss', children='''
+            * {
+                font-size: 2rem;
+                margin: .1rem;
             }
             .button {
                 background: none;
-                border: 1px solid red;
+                border: .1rem solid red;
                 border-radius: .1rem;
+                
+                &:focus, &:hover {
+                    border-color: green;
+                    background: aliceblue;
+                }
             }
         ''')
     ]
