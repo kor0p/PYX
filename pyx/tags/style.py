@@ -10,10 +10,9 @@ except ImportError:
     sass = None  # if in projects not using scss/sass
 
 
-_pyx_style_attr = 'pyx-style'
-
-
 class style(**cached_tag.extend):
+    _pyx_style_attr = 'pyx-style'
+
     def __init__(self, *, src=None, **kwargs):
         self.src = src
         self.kwargs = kwargs
@@ -30,10 +29,10 @@ class style(**cached_tag.extend):
         """https://stackoverflow.com/a/32134836/8851903"""
         if not style_name:
             style_name = get_random_name()
-        scoped_data = f'{_pyx_style_attr}="{style_name}"'
+        scoped_data = f'{self._pyx_style_attr}="{style_name}"'
         css_rules = re.findall(r'[^{]+{[^}]*}', styles, re.MULTILINE)
         return (
-            (_pyx_style_attr, style_name),
+            (self._pyx_style_attr, style_name),
             '\n'.join(
                 ','.join(
                     f'[{scoped_data}] {item}'
@@ -55,11 +54,11 @@ class style(**cached_tag.extend):
         children = self.kwargs.get('children')
 
         if self.kwargs.get('scoped'):
-            if style_name := self.parent.kw.get(_pyx_style_attr):
+            if style_name := self.parent._Tag__kw.get(self._pyx_style_attr):
                 _, children = self._scope_style(children, style_name=style_name)
             else:
                 (attr, style_name), children = self._scope_style(children)
-                self.parent[_pyx_style_attr] = style_name
+            self.parent._Tag__kw[self._pyx_style_attr] = self.parent.kw[self._pyx_style_attr] = style_name
 
         if self.kwargs.get('head', False):
             __extra__.css.append(children)
