@@ -7,35 +7,35 @@ from .script import script
 
 @DEFAULT_TAG.update(is_in_dom=True)
 def tab(*, name, children, active=None, on_click=None, url=None, href=None):
-    return li(children=(
-        a(children=name, href=href) if href else name
-    ))
+    return li(children=(a(children=name, href=href) if href else name))
 
 
 @DEFAULT_TAG.update(is_in_dom=True, escape=False)
 def tabs(tag, selected=None, children=(), _class=''):
     if selected is None and children:
-        selected = children[0].kw.name
+        selected = children[0]['name']
     tag.selected = state(selected)
 
     for child in children:
-        child.kw.active = tag.selected == child.kw.name
-        child.kw.on_click = lambda t=child: set_selected(t)
-        if callable(children_kwarg := child.kw.get('children')):
-            child.kw.children = children_kwarg()
+        child['active'] = tag.selected == child['name']
+        child['on_click'] = lambda t=child: set_selected(t)
+        if callable(children_kwarg := child['children']):
+            child['children'] = children_kwarg()
 
     def set_selected(t):
-        tag.selected = t.kw.name
+        tag.selected = t['name']
         return 'selected: ' + str(tag.selected)
 
     return [
         ul(children=children),
-        div(_class=_class, children=ChildrenComponent([
-            child.kw.children
-            for child in children
-            if not isinstance(child, str) and child.kw.active
-        ])),
-        script(children='''
+        div(
+            _class=_class,
+            children=ChildrenComponent(
+                [child['children'] for child in children if not isinstance(child, str) and child['active']]
+            ),
+        ),
+        script(
+            children='''
             const activeTab = $('tab[active]')
             const name = activeTab.attr('url') || activeTab.attr('name')
             const pathname_trailing_slash = window.location.pathname.replace(/\/$/g, '')
@@ -51,5 +51,6 @@ def tabs(tag, selected=None, children=(), _class=''):
                 })
             }
             handleToggleTab()
-        ''')
+        '''
+        ),
     ]

@@ -1,12 +1,12 @@
-from typing import Union
+from typing import Union, Any
 
 from ..utils.JSON import JSON
 from ..main import cached_tag, Component
 
 
-class SelectItem(JSON[Union['label', 'value'], object]):
+class SelectItem(JSON[Union['label', 'value'], Any]):
     label: str
-    value: str
+    value: Any
 
 
 class SelectItems:
@@ -28,20 +28,17 @@ class SelectItems:
 
 
 @cached_tag
-def option(*, label, **attrs):
+def option(*, label):
     return label
 
 
 @cached_tag
-def select(tag: Component, **k):
-    items = SelectItems(tag.kw.pop('items'))
+def select(tag: Component):
+    items = SelectItems(tag['items':])
     return [
         option(
             **item,
-            selected=(
-                tag.kw.value == item.value or
-                tag.kw.value == item.label
-            )
+            selected=tag['value'] in (item.value, item.label)
         )
         for item in items
     ]

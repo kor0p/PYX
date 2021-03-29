@@ -4,15 +4,8 @@ from functools import wraps
 def __wrapper__(method):
     @wraps(method)
     def __wrapped_method__(self, *args, **kwargs):
-        args = (
-            arg.__get__() if hasattr(arg, '__get__') else arg
-            for arg in args
-        )
-        kwargs = {
-            name:
-                value.__get__() if hasattr(value, '__get__') else value
-            for name, value in kwargs.items()
-        }
+        args = (arg.__get__() if hasattr(arg, '__get__') else arg for arg in args)
+        kwargs = {name: value.__get__() if hasattr(value, '__get__') else value for name, value in kwargs.items()}
 
         return method(self, *args, **kwargs)
 
@@ -77,6 +70,9 @@ class state:
         if key == '_value' or key in dir(self):
             return super().__delattr__(key)
         return self._value.__delattr__(key)
+
+    def __int__(self):
+        return int(self._value)
 
     def __str__(self):
         return str(self._value)

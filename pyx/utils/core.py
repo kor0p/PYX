@@ -1,5 +1,13 @@
 import sys
-from typing import Callable
+from typing import Callable, Any
+
+
+def get_(key: str) -> Callable[[object], Any]:
+    def _get_(obj: object) -> Any:
+        return getattr(obj, key, None)
+
+    _get_.__name__ = _get_.__qualname__ = 'get_' + key
+    return _get_
 
 
 def is_class(cls):
@@ -11,6 +19,7 @@ class classproperty:
     @property for @classmethod
     taken from http://stackoverflow.com/a/13624858
     """
+
     def __init__(self, fget):
         self.fget = fget
 
@@ -22,6 +31,7 @@ class staticproperty:
     """
     @property for @staticmethod
     """
+
     def __init__(self, fget):
         self.fget = fget
 
@@ -30,10 +40,7 @@ class staticproperty:
 
 
 def join(sep, iterable, mapper: Callable[[object], str] = str, except_values=(None,)):
-    return sep.join(map(
-        lambda v: '' if v in except_values else mapper(v),
-        iterable
-    ))
+    return sep.join(map(lambda v: '' if v in except_values else mapper(v), iterable))
 
 
 def escape(s, quote=True):
@@ -69,6 +76,7 @@ def call_function_get_frame(func, *args, **kwargs):
             frame = _frame
             sys.settrace(trace)
         return trace
+
     sys.settrace(snatch_locals)
     try:
         result = func(*args, **kwargs)

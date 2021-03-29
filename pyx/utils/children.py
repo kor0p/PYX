@@ -4,7 +4,7 @@ from .core import join, escape
 
 
 class ChildrenComponent(list):
-    def __init__(self, args: Optional[list] = None):
+    def __init__(self, args: Optional[Union[list, str, object]] = None):
         if args is None or (not args and not len(args)):
             super().__init__()
             return
@@ -14,7 +14,7 @@ class ChildrenComponent(list):
                 return
         except TypeError:
             pass
-        super().__init__((args, ))
+        super().__init__((args,))
 
     @staticmethod
     def escape(children, _escape=True, /):
@@ -22,12 +22,7 @@ class ChildrenComponent(list):
             return children
 
         if _escape:
-            return ChildrenComponent([
-                escape(child)
-                if isinstance(child, str) else
-                child
-                for child in children
-            ])
+            return ChildrenComponent([escape(child) if isinstance(child, str) else child for child in children])
         else:
             for child in children:
                 if not isinstance(child, str):
@@ -38,18 +33,12 @@ class ChildrenComponent(list):
         return hash(tuple(self or ()))
 
     def __call__(self, *args, **kwargs):
-        return ChildrenComponent([
-            child(*args, **kwargs) if child else ''
-            for child in self
-        ])
+        return ChildrenComponent([child(*args, **kwargs) if child else '' for child in self])
 
     def __getattr__(self, key):
         if key in dir(self):
             return super().__getattribute__(key)
-        return ChildrenComponent([
-            getattr(child, key, '')
-            for child in self
-        ])
+        return ChildrenComponent([getattr(child, key, '') for child in self])
 
     def __setattr__(self, key, value):
         if key in dir(self):

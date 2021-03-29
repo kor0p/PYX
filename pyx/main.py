@@ -1,11 +1,11 @@
 import inspect
 import keyword
-from typing import Union, Optional, Callable, TypeVar
+from typing import Union, Optional, Callable, TypeVar, Any
 from types import ModuleType
 
 from .utils.app import create_request
 from .utils.children import ChildrenComponent
-from .utils.core import is_class
+from .utils.core import get_, is_class
 from .utils.dom import set_to_dom, get_session_id
 from .utils.tags import parse_tag_name
 from .utils.JSON import JSON
@@ -55,9 +55,10 @@ class Tag:
     __kw: JSON = JSON()
     hash: Optional[int] = None
     session: Optional[str] = None
+    parent: Optional[T] = None
     children: ChildrenComponent[Union[str, ClassComponent]] = ''
     _cached: dict = {}
-    _underscore_attributes = keyword.kwlist  # async, class, for, etc.
+    _underscore_attributes = ['_' + attr for attr in keyword.kwlist]  # async, class, for, etc.
     _tag_argspec: Optional[inspect.FullArgSpec] = None
     _options: Options = Options()
 
@@ -107,6 +108,42 @@ class Tag:
     def update(self, **k) -> T:
         return type(self)(self.f.__f__, **(self._options | k))
 
+    def __getitem__(self, key: Union[str, slice]) -> Any:
+        """
+        get attribute of Tag
+        if there is a colon in the end,
+        result will be be popped from attr list
+
+        >>> ...
+        >>> @cached_tag
+        ... def select(tag: Component):
+        ...     items = SelectItems(tag['items':])  # this removes [items] attribute
+        ...     return [
+        ...         option(
+        ...             **item,
+        ...                 selected=tag['value'] in (item.value, item.label)
+        ...             )   #  tag['value'] just return [value] attribute
+        ...         for item in items
+        ...     ]
+        """
+        fn = get_('get')
+
+        if isinstance(key, slice):
+            key = key.start
+            fn = get_('pop')
+
+        if key in self.kw:
+            return fn(self.kw)(key)
+
+        return fn(self.__kw)(key)
+
+    def __setitem__(self, key, value):
+        if key in self.kw or (self._tag_argspec and self._tag_argspec.varkw):
+            self.kw[key] = value
+            return
+
+        self.__kw[key] = value
+
     def __new__(cls, f=None, **k):
         if isinstance(f, cls):
             return f
@@ -135,19 +172,22 @@ class Tag:
     def __hash__(self):
         return hash((self.name, self.f, tuple(self.kw.items())))
 
-    def _get_cached_key(self, kwargs: JSON):
+    def _get_cached_key(self, kwargs: dict):
         return (
             self.name,
             hash(self.f),
-            tuple(sorted((a, str(b)) for a, b in kwargs.items()))
+            tuple(sorted((a, str(b)) for a, b in kwargs.items())),
         )
 
-    def clone(self):
+    def clone(self, *, deep=False):
         cls = type(self)
-        return cls(
+        this = cls(
             self.f.clone(self.session == get_session_id()),
             **self._options,
         )
+        if deep:
+            this._Tag__kw = self.__kw
+        return this
 
     def _handle_callable_attrs(self, k, v):
         _hash = hash(v)
@@ -188,35 +228,32 @@ class Tag:
         """
         if a:
             return type(self)(*a, **self._options)
-        kw = self.kw | kw
-        kw = JSON(kw)
         is_cached = self._options.cache
         cached_key = None
         if is_cached:
-            cached_key = self._get_cached_key(kw)
+            cached_key = self._get_cached_key(self.kw | kw)
             if cached := self._cached.get(cached_key):
                 return cached
 
-        this = self.clone()
+        this = self.clone(deep=True)
+        this.kw = JSON(self.kw | kw)
         tag_argspec = self._tag_argspec
         if not tag_argspec:
             tag_argspec = self._tag_argspec = inspect.getfullargspec(this.f.__f__)
         _is_class = self._is_class
         args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
-        for attribute in self._underscore_attributes:
-            underscored = '_' + attribute
+        for underscored in self._underscore_attributes:
             if underscored in kw and underscored not in tag_argspec.args:
-                kw[attribute] = kw.pop(underscored)
+                this.kw[underscored[1:]] = kw.pop(underscored)
 
         if not tag_argspec.varkw:
             for attr_name in kw.copy().keys():
                 if attr_name not in args_names:
                     this.__kw[attr_name] = kw.pop(attr_name)
 
-        this.kw = kw
-        if 'children' in kw and (self._options.children_raw or not isinstance(kw.children, ChildrenComponent)):
-            kw.children = ChildrenComponent(kw.children)
+        if 'children' in kw and (self._options.children_raw or not isinstance(kw['children'], ChildrenComponent)):
+            this.kw['children'] = ChildrenComponent(kw['children'])
 
         if len(tag_argspec.args) == 0 or _is_class:
             this.children = this.f(**kw)
@@ -288,12 +325,8 @@ class Tag:
         if not result:
             return ''
 
-        result = result.replace(
-            '<' + self.name,
-            f'<{self.name}' + (f' pyx-id="{_hash}" pyx-dom ' if _is_in_dom else ''),
-            1
-        )
-        return result
+        name = self.name
+        return result.replace('<' + name, f'<{name}' + (f' pyx-id="{_hash}" pyx-dom ' if _is_in_dom else ''), 1)
 
 
 class MetaTag(type):
@@ -304,11 +337,13 @@ class MetaTag(type):
     >>> class MyApp(**cached_tag.extend): pass
     >>> assert MyApp._options.cache == True
 
-    >>> class MyApp(**cached_tag.extend, cache=False): pass
+    >>> class MyApp(Tag, **cached_tag.extend, cache=False): pass  # you can extend Tag or MyApp to IDE can work properly
     >>> assert MyApp._options.cache == False
     """
+
     def __new__(mcs, name, bases, dct, **kwargs):
-        bases = (Tag, *bases)
+        if bases and not issubclass(bases[0], Tag):
+            bases = (Tag, *bases)
         self = super().__new__(mcs, name, bases, dct)
 
         if 'title' not in kwargs:
@@ -332,9 +367,11 @@ class Component:
     def init(self):
         return self.__tag__.init
 
-    @property
-    def kw(self):
-        return self.__tag__.kw
+    def __getitem__(self, key):
+        return self.__tag__[key]
+
+    def __setitem__(self, key, value):
+        self.__tag__[key] = value
 
     def _get(self, key):
         return self._states[key]
@@ -374,18 +411,10 @@ class Component:
         super().__init__()
 
     def __str__(self):
-        return (
-            '<Component ' + self.__f__.__name__ + '('
-            + ', '.join(k + '=' + v for k, v in self.kw.items())
-            + ')>'
-        )
+        return '<Component ' + self.__f__.__name__ + '(' + ', '.join(k + '=' + v for k, v in self.kw.items()) + ')>'
 
     def __hash__(self):
-        return hash((
-            self.__f__,
-            self.__name__,
-            self._state_cls,
-        ))
+        return hash((self.__f__, self.__name__, self._state_cls))
 
     def __call__(self, *a, **k):
         f = self.__f__
@@ -443,5 +472,5 @@ class Component:
             return super().__delattr__(key)
 
 
-cached_tag = Tag(cache=True)
-
+# cached_tag = Tag(cache=True)
+cached_tag = Tag(cache=False)
