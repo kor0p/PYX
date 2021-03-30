@@ -1,17 +1,19 @@
+import re
 import sys
-from typing import Callable, Any
+from typing import Callable
+from operator import attrgetter
 
 
-def get_(key: str) -> Callable[[object], Any]:
-    def _get_(obj: object) -> Any:
-        return getattr(obj, key, None)
-
-    _get_.__name__ = _get_.__qualname__ = 'get_' + key
-    return _get_
+get_ = attrgetter
 
 
 def is_class(cls):
     return isinstance(cls, type)
+
+
+def remove_spaces_after_newline(string, replace_with=''):
+    tabs = re.search('\n?(?P<spaces> *)', string).group('spaces')
+    return re.sub('^' + tabs, replace_with, string, flags=re.MULTILINE)
 
 
 class classproperty:

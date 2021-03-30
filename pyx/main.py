@@ -9,7 +9,7 @@ from .utils.core import get_, is_class
 from .utils.dom import set_to_dom, get_session_id
 from .utils.tags import parse_tag_name
 from .utils.JSON import JSON
-from .utils.state import state
+from .utils.state import state, __wrapper__
 
 T = TypeVar('T', bound='Tag')
 C = TypeVar('C', bound='Component')
@@ -361,15 +361,17 @@ class Component:
     _states: JSON = JSON()
     frame = None
     locals: dict = {}
-    _state_cls: type = state
+    _state_cls: type(state) = state
 
     @property
     def init(self):
         return self.__tag__.init
 
+    @__wrapper__
     def __getitem__(self, key):
         return self.__tag__[key]
 
+    @__wrapper__
     def __setitem__(self, key, value):
         self.__tag__[key] = value
 
@@ -453,6 +455,8 @@ class Component:
             if isinstance(_exists_value, _state_cls) and _exists_value.__get_init__() == value.__get__():
                 return
             else:
+                if not value._name:
+                    value._name = key
                 return self._set(key, value)
         else:
             if isinstance(_exists_value, _state_cls):

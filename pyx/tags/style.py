@@ -3,6 +3,7 @@ import os
 
 from .default import cached_tag, __extra__
 from ..main import Tag
+from ..utils.core import remove_spaces_after_newline
 from ..utils.rand import get_random_name
 from .all import link
 
@@ -18,6 +19,8 @@ class style(**cached_tag.extend):
     def __init__(self, *, src=None, scoped=False, **kwargs):
         kwargs.setdefault('lang', os.environ.get('__PYX_STYLE_LANG__'))
 
+        kwargs['children'] = remove_spaces_after_newline(kwargs.get('children', ''))
+
         self['scoped'] = scoped
         self.src = src
         self.kwargs = kwargs
@@ -26,7 +29,7 @@ class style(**cached_tag.extend):
 
         if (lang := kwargs.get('lang')) in ('scss', 'sass'):
             self.kwargs['children'] = sass.compile(
-                string=kwargs.get('children'),
+                string=kwargs['children'],
                 indented=lang == 'sass',
                 **kwargs.get('sass_options', {}),
             )
@@ -52,7 +55,7 @@ class style(**cached_tag.extend):
             __extra__.head.append(_link)
             return
 
-        children = self.kwargs.get('children')
+        children = self.kwargs['children']
 
         if self['scoped']:
             if style_name := self.parent[self._pyx_style_attr]:

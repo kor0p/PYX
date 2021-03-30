@@ -1,5 +1,3 @@
-import math
-
 from pyx import cached_tag, state, button, style, br, div
 
 
@@ -29,19 +27,19 @@ def func(tag):
             scoped=True,
             lang='sass',
             children=f'''
-* 
-    font-size: 2rem
-    margin: 0.1rem
-.text
-    color: {color}
-.button
-    background: none
-    border: .1rem solid red
-    border-radius: .1rem
-    
-    &:focus, &:hover
-        border-color: green
-        background: aliceblue''',
+            *
+                font-size: 2rem
+                margin: 0.1rem
+            .text
+                color: {color}
+            .button
+                background: none
+                border: .1rem solid red
+                border-radius: .1rem
+                
+                &:focus, &:hover
+                    border-color: green
+                    background: aliceblue''',
         ),
     ]
 

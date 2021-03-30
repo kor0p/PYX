@@ -1,6 +1,5 @@
-import re
-
 from ..utils import __extra__
+from ..utils.core import remove_spaces_after_newline
 from ..utils.children import ChildrenComponent
 from ..main import cached_tag, Tag
 
@@ -65,8 +64,7 @@ def python(tag: Tag, **k):
             code = '\n'.join('    ' + line for line in src.readlines())
     else:
         children = str(k.get('children', ''))
-        tabs = re.search('\n?(?P<spaces> *)', children).group('spaces')
-        code = re.sub('^' + tabs, '    ', children, flags=re.MULTILINE)
+        code = remove_spaces_after_newline(children, '    ')
     exec(
         f'''
 def __python__():
@@ -96,7 +94,10 @@ class __fragment__(**DEFAULT_TAG.extend):
 @MAIN_TAG
 def __head__(*, children=''):
     return (
-        DEFAULT_HEAD.format(extra_css=__extra__.css, extra_head=__extra__.head,)
+        DEFAULT_HEAD.format(
+            extra_css=__extra__.css,
+            extra_head=__extra__.head,
+        )
         + children
     )
 
@@ -104,7 +105,8 @@ def __head__(*, children=''):
 @MAIN_TAG
 def __body__(*, children=''):
     return children + DEFAULT_BODY.format(
-        extra_js=__extra__.js, extra_body=__extra__.body,
+        extra_js=__extra__.js,
+        extra_body=__extra__.body,
     )
 
 
