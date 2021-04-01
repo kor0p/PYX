@@ -25,7 +25,7 @@ class ChildrenComponent(list):
             return ChildrenComponent([escape(child) if isinstance(child, str) else child for child in children])
         else:
             for child in children:
-                if not isinstance(child, str):
+                if not isinstance(child, str) and child:
                     child._options.escape = False
             return children
 

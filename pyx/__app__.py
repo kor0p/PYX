@@ -20,9 +20,7 @@ __APP__ = create_app(__name__)
 
 def render(body: Union[str, Tag, PYXModule]):
     cookies = get_cookies()
-    _ids_to_remove = [
-        name for name in cookies.keys() if '__pyx_id' in name and __PYX_ID__ != name
-    ]
+    _ids_to_remove = [name for name in cookies.keys() if '__pyx_id' in name and __PYX_ID__ != name]
     exists = get_session_id() is not None
     pyx_id = None
     if not exists:
@@ -42,9 +40,7 @@ def render(body: Union[str, Tag, PYXModule]):
         del_dom(_id)
         set_cookie(_id, '', response, expires=0)
     if not exists:
-        set_cookie(
-            __PYX_ID__, pyx_id, response, expires=datetime.strptime('2100', '%Y')
-        )
+        set_cookie(__PYX_ID__, pyx_id, response, expires=datetime.strptime('2100', '%Y'))
     return response
 
 
@@ -57,6 +53,7 @@ handle_requests(
 
 def run_app(*a, **k):
     import os
+
     k.setdefault('port', 5000)
     app_name = os.environ.get('__APP__')
     if app_name == 'Flask':

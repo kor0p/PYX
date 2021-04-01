@@ -116,6 +116,6 @@ def __html__(*, head='', children=''):
     __extra__.head = ChildrenComponent()
     __extra__.js = ChildrenComponent()
     __extra__.body = ChildrenComponent()
-    _body = __body__(children=str(children))
-    _head = __head__(children=str(head))
+    _body = __body__(str(children))
+    _head = __head__(str(head))
     return [_head, _body]

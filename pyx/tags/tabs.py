@@ -7,7 +7,7 @@ from .script import script
 
 @DEFAULT_TAG.update(is_in_dom=True)
 def tab(*, name, children, active=None, on_click=None, url=None, href=None):
-    return li(children=(a(children=name, href=href) if href else name))
+    return li(a(name, href=href) if href else name)
 
 
 @DEFAULT_TAG.update(is_in_dom=True, escape=False)
@@ -27,7 +27,7 @@ def tabs(tag, selected=None, children=(), _class=''):
         return 'selected: ' + str(tag.selected)
 
     return [
-        ul(children=children),
+        ul(children),
         div(
             _class=_class,
             children=ChildrenComponent(
@@ -35,7 +35,7 @@ def tabs(tag, selected=None, children=(), _class=''):
             ),
         ),
         script(
-            children='''
+            r'''
             const activeTab = $('tab[active]')
             const name = activeTab.attr('url') || activeTab.attr('name')
             const pathname_trailing_slash = window.location.pathname.replace(/\/$/g, '')

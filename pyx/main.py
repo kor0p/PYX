@@ -148,6 +148,10 @@ class Tag:
         if isinstance(f, cls):
             return f
         self = super().__new__(cls)
+
+        if not callable(f) and f is not None:
+            self.__init__(children=f, **k)
+            return self
         self.__kw = JSON()
         if f:
             k.setdefault('title', f.__name__)
@@ -211,7 +215,12 @@ class Tag:
             _attrs[k] = v
         self.__kw = _attrs
 
-    def __call__(self, *a: tuple[Callable], **kw: dict[str, object]):
+    def __call__(
+        self,
+        decorator_or_children: Union[Callable, str] = None,
+        *rest_children,
+        **kw: dict[str, Any],
+    ):
         """
         @Tag()
         def custom_tag():
@@ -226,8 +235,11 @@ class Tag:
         def custom_tag():
             pass
         """
-        if a:
-            return type(self)(*a, **self._options)
+        if decorator_or_children:
+            if isinstance(decorator_or_children, Callable):
+                return type(self)(decorator_or_children, **self._options)
+            else:
+                kw['children'] = [decorator_or_children, *rest_children] if rest_children else decorator_or_children
         is_cached = self._options.cache
         cached_key = None
         if is_cached:
@@ -243,14 +255,15 @@ class Tag:
         _is_class = self._is_class
         args_names = [*tag_argspec.args, *tag_argspec.kwonlyargs]
 
-        for underscored in self._underscore_attributes:
-            if underscored in kw and underscored not in tag_argspec.args:
-                this.kw[underscored[1:]] = kw.pop(underscored)
-
         if not tag_argspec.varkw:
             for attr_name in kw.copy().keys():
-                if attr_name not in args_names:
-                    this.__kw[attr_name] = kw.pop(attr_name)
+                if attr_name not in args_names and '_' + attr_name not in self._underscore_attributes:
+                    this.__kw[attr_name.strip('_')] = kw.pop(attr_name)
+                    this.kw.pop(attr_name)
+
+        for underscored in self._underscore_attributes:
+            if underscored in kw and underscored not in tag_argspec.args:
+                this.kw[underscored[1:]] = this[underscored:]
 
         if 'children' in kw and (self._options.children_raw or not isinstance(kw['children'], ChildrenComponent)):
             this.kw['children'] = ChildrenComponent(kw['children'])

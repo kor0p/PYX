@@ -16,10 +16,11 @@ except ImportError:
 class style(**cached_tag.extend):
     _pyx_style_attr = 'pyx-style'
 
-    def __init__(self, *, src=None, scoped=False, **kwargs):
+    def __init__(self, children='', src=None, scoped=False, **kwargs):
+        children = str(children)
         kwargs.setdefault('lang', os.environ.get('__PYX_STYLE_LANG__'))
 
-        kwargs['children'] = remove_spaces_after_newline(kwargs.get('children', ''))
+        kwargs['children'] = remove_spaces_after_newline(children)
 
         self['scoped'] = scoped
         self.src = src
@@ -38,11 +39,13 @@ class style(**cached_tag.extend):
         """https://stackoverflow.com/a/32134836/8851903"""
         if not style_name:
             style_name = get_random_name()
-        scoped_data = f'{self._pyx_style_attr}="{style_name}"'
+        scoped_data = f'[{self._pyx_style_attr}="{style_name}"]'
         css_rules = re.findall(r'[^{]+{[^}]*}', styles, re.MULTILINE)
         return (
             (self._pyx_style_attr, style_name),
-            '\n'.join(','.join(f'[{scoped_data}] {item}' for item in rule.strip().split(',')) for rule in css_rules)
+            '\n'.join(
+                ',\n'.join(f'{scoped_data} {item.strip()}' for item in rule.strip().split(',')) for rule in css_rules
+            )
             + '\n',
         )
 
