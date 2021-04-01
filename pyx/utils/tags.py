@@ -1,9 +1,9 @@
-import regex
+from .core import camel_or_snake_to_kebab_case
 
 
 def parse_tag_name(name: str) -> str:
     """
-    parsing name of tag (function or class) to html-compitible
+    parsing name of tag (function or class) to html-compatible
     >>> def __pyx__(): ...  # <pyx></pyx>
     >>> class __html__: ...  # <html></html>
     >>> def myTagName(): ...  # <my-tag-name/>
@@ -12,11 +12,6 @@ def parse_tag_name(name: str) -> str:
     """
     name = name.strip('_')
 
-    name = regex.sub('_', '-', name)
-    name = regex.sub(
-        r'(\p{Lu})',  # this matches all uppercase unicode symbols
-        lambda m: '-' + m.group(1).lower(),
-        name
-    )
+    name = camel_or_snake_to_kebab_case(name)
 
     return name

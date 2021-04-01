@@ -35,29 +35,52 @@ will render
 # tests/test_2.py
 from pyx import cached_tag, state, button, style, br, div
 
+from pyx.utils.css import css
+
+
 @cached_tag.update(title='div')
 def func(tag):
     tag.count = state(0)
+
     def increment():
         tag.count += 1
+
     def decrement():
         tag.count -= 1
+
+    if tag.count > 0:
+        color = 'green'
+    elif tag.count < 0:
+        color = 'red'
+    else:
+        color = 'black'
+
     return [
         div(_class='text', children=f'Count: {tag.count}'),
         br(),
-        button(_class='button', on_click=increment, children="++"),
-        br(),
-        button(_class='button', on_click=decrement, children="––"),
-        style(scoped=True, children='''
-            .text, .button {
-                font-size: 1rem;
-            }
-            .button {
-                background: none;
-                border: 1px solid red;
-                border-radius: .1rem;
-            }
-        ''')
+        button(_class='button', on_click=increment, children="+ +"),
+        button(_class='button', on_click=decrement, children="– –"),
+        style(
+            scoped=True,
+            children=css(
+                {
+                    '*': dict(
+                        font_size='2rem',
+                        margin='0.1rem',
+                    ),
+                    '.text': dict(color=color),
+                    '.button': {
+                        'background': 'none',
+                        'border': '.1rem solid red',
+                        'border_radius': '.1rem',
+                        ('&:focus', '&:hover'): dict(
+                            border_color='green',
+                            background='aliceblue',
+                        ),
+                    },
+                }
+            ),
+        ),
     ]
 
 
@@ -65,7 +88,6 @@ def func(tag):
 def __pyx__():
     """entrypoint for pyx"""
     return func()
-
 ```
 will render
 ```html
@@ -147,7 +169,7 @@ will render
 ### or merge them with tabs component
 ```python
 # tests/test_tabs.py
-from pyx import tabs, tab, style, __APP__ as app
+from pyx import tabs, div, tab, style, __APP__ as app
 from pyx.utils.app import utils
 
 from tests import test_1, test_2, test_3
@@ -158,58 +180,58 @@ def main():
     tabs_list = [
         dict(name='page 1', children=test_1.__pyx__, url='/?page=1'),
         dict(name='page 2', children=test_2.__pyx__, url='/?page=2'),
-        dict(name='page 3', children=test_3.__pyx__, url='/?page=3')
+        dict(name='page 3', children=test_3.__pyx__, url='/?page=3'),
     ]
-    return [
-        tabs(
-            selected='page ' + query['page'] if 'page' in query else None,
-            _class='content',
-            children=[tab(**kw) for kw in tabs_list],
-        ),
-        style(scoped=True, head=True, children='''
-            ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background-color: #f1f1f1;
-            }
-            
-            /* Float the list items side by side */
-            tab {
-                float: left;
-            }
-            
-            /* Change background color of links on hover */
-            tabs tab:hover {
-                background-color: #ddd;
-            }
-            
-            /* Create an active/current tablink class */
-            tabs tab:focus, tabs tab[active] li {
-                background-color: #ccc;
-            }
-            
-            /* Style the links inside the list items */
-            li {
-                font-family: "Lato", sans-serif;
-                display: inline-block;
-                color: black;
-                text-align: center;
-                padding: 14px 16px;
-                text-decoration: none;
-                transition: 0.3s;
-                font-size: 17px;
-            }
-            
-            /* Style the tab content */
-            .content {
-                padding: 6px 12px;
-                -webkit-animation: fadeEffect 1s;
-                animation: fadeEffect 1s;
-            }
-        '''),
-    ]
+    return div(
+        [
+            tabs(
+                selected='page ' + query['page'] if 'page' in query else None,
+                _class='content',
+                children=[tab(**kw) for kw in tabs_list],
+            ),
+            style(
+                scoped=True,
+                head=True,
+                lang='scss',
+                children='''
+                    tabs {
+                        ul {
+                            list-style-type: none;
+                            margin: 0;
+                            padding: 0;
+                            overflow: hidden;
+                            background-color: #f1f1f1;
+                        }
+                        .content {
+                            padding: 6px 12px;
+                            -webkit-animation: fadeEffect 1s;
+                            animation: fadeEffect 1s;
+                        }
+                        tab {
+                            float: left;
+
+                            &:hover {
+                                background-color: #ddd;
+                            }
+                            &:focus, &[active] li {
+                                background-color: #ccc;
+                            }
+
+                            li {
+                                font-family: "Lato", sans-serif;
+                                display: inline-block;
+                                color: black;
+                                text-align: center;
+                                padding: 14px 16px;
+                                text-decoration: none;
+                                transition: 0.3s;
+                                font-size: 17px;
+                            }
+                        }
+                    }''',
+            ),
+        ]
+    )
 
 
 __pyx__ = main

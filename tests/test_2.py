@@ -1,5 +1,7 @@
 from pyx import cached_tag, state, button, style, br, div
 
+from pyx.utils.css import css
+
 
 @cached_tag.update(title='div')
 def func(tag):
@@ -25,21 +27,24 @@ def func(tag):
         button(_class='button', on_click=decrement, children="– –"),
         style(
             scoped=True,
-            lang='sass',
-            children=f'''
-            *
-                font-size: 2rem
-                margin: 0.1rem
-            .text
-                color: {color}
-            .button
-                background: none
-                border: .1rem solid red
-                border-radius: .1rem
-                
-                &:focus, &:hover
-                    border-color: green
-                    background: aliceblue''',
+            children=css(
+                {
+                    '*': dict(
+                        font_size='2rem',
+                        margin='0.1rem',
+                    ),
+                    '.text': dict(color=color),
+                    '.button': {
+                        'background': 'none',
+                        'border': '.1rem solid red',
+                        'border_radius': '.1rem',
+                        ('&:focus', '&:hover'): dict(
+                            border_color='green',
+                            background='aliceblue',
+                        ),
+                    },
+                }
+            ),
         ),
     ]
 

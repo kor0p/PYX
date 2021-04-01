@@ -1,5 +1,6 @@
 import re
 import sys
+import regex
 from typing import Callable
 from operator import attrgetter
 
@@ -9,6 +10,23 @@ get_ = attrgetter
 
 def is_class(cls):
     return isinstance(cls, type)
+
+
+def camel_or_snake_to_kebab_case(string: str):
+    """
+    parsing name of tag to html-compatible or name of property to css-compatible
+    >>> def __pyx__(): ...  # <pyx></pyx>
+    >>> def myTagName(): ...  # <my-tag-name/>
+    >>> css(font_size='20px')  # font-size: 20px
+    >>> css(backgroundColor='red')  # background-color: red
+    """
+    string = regex.sub('_', '-', string)
+    string = regex.sub(
+        r'(\p{Lu})',  # this matches all uppercase unicode symbols
+        lambda m: '-' + m.group(1).lower(),
+        string,
+    )
+    return string
 
 
 def remove_spaces_after_newline(string, replace_with=''):
