@@ -16,11 +16,11 @@ def __wrapper__(method):
 class state:
     # MAIN STATE
 
-    _value_init = None
+    _value_init = ...  # state(None) must handle None initial value
     _value = None
     _name = ''
 
-    def __init__(self, value, name=''):
+    def __init__(self, value=None, name=''):
         self.__set__(value)
         self._name = name
 
@@ -32,7 +32,7 @@ class state:
 
     def __set__(self, value):
         self._set(value)
-        if self._value_init is None:
+        if self._value_init is ...:
             self._value_init = value
 
     def __del__(self):

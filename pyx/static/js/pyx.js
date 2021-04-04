@@ -118,12 +118,12 @@ window.makeId = function makeId () {
     })
 }
 
-window.__request = async function __request(event_type, el, url, params) {
+window.__request = async function __request(event_type, el, params) {
     params.id = el.__id__
     try {
         window.printRequestError() // clear error
         const res = await fetch(
-            `/pyx/${el.tagName.toLowerCase()}___${event_type}___${url}`,
+            `/pyx/${el.tagName.toLowerCase()}___${event_type}___${el.__self_id__}`,
             { method: 'POST', body: JSON.stringify(params) }
         )
         if (res.status !== 200) {
@@ -200,47 +200,47 @@ function checkModifiers(el, event) {
 window.__events__ = {
     change (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { value: el.tag.value })
+        return window.__request(el.name, el.tag, { value: el.tag.value })
     },
     click (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, {})
+        return window.__request(el.name, el.tag, {})
     },
     contextmenu (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, {})
+        return window.__request(el.name, el.tag, {})
     },
     mouseover (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
     mouseout (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
     keydown (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
     keyup (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
     keypress (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
     load (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
     submit (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
     custom (el, event) {
         if (!checkModifiers(el, event)) return
-        return window.__request(el.name, el.tag, el.value, { m: el.modifiers.join(',') })
+        return window.__request(el.name, el.tag, { m: el.modifiers.join(',') })
     },
 }
 window.__events__.click._alias_loaders = {

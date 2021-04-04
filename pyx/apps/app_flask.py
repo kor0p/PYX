@@ -1,12 +1,14 @@
 from os import path
 from pathlib import Path
 from urllib import parse
+from typing import Any
 
 from flask import Flask, request, jsonify, abort, make_response
 from flask.json import loads
 
-from pyx.utils.core import staticproperty
+from pyx.utils.core import classproperty
 from pyx.utils.id import __PYX_ID__
+
 # you can import any pyx.utils,
 # except pyx.utils.app and pyx.utils.dom,
 # because it raises ImportError('... (most likely due to a circular import) ...')
@@ -27,9 +29,7 @@ class RequestError(ConnectionError):
 
 def create_app(name='<pyx>', **kwargs):
     global _app
-    kwargs['static_folder'] = str(
-        (Path(path.abspath(__file__)) / '../../static').resolve()
-    )
+    kwargs['static_folder'] = str((Path(path.abspath(__file__)) / '../../static').resolve())
     kwargs['static_url_path'] = '/pyx/static'
     _app = Flask(name, **kwargs)
     return _app
@@ -90,11 +90,7 @@ def handle_requests(request_prefix, on_error, rerender):
             print(req(**kw))
             return _from_request(_id, rerender(_id))
         except Exception as error:
-            return abort(
-                make_response(
-                    _from_request('error', on_error(str(error), kw)), _error_status
-                )
-            )
+            return abort(make_response(_from_request('error', on_error(str(error), kw)), _error_status))
 
     return __pyx__requests__
 
@@ -109,21 +105,40 @@ def __index__(func):
 
 
 class utils:
-    @staticproperty
-    def query(*_):
-        result: dict[bytes, list[bytes]] = parse.parse_qs(request.query_string)
-        return {
-            k.decode('utf-8'): ''.join(b.decode('utf-8') for b in v)
-            for k, v in result.items()
-        }
+    _cache: dict[request, Any] = {}
 
-    @staticproperty
-    def path(*_):
-        return request.view_args
+    _query: dict[str, Any] = {}
+    _path: dict[str, Any] = {}
+    _host: str = ''
 
-    @staticproperty
-    def host(*_):
-        return request.host
+    def __init__(self, request=None):
+        self.request = request
+
+    @classproperty
+    def current(cls):
+        if request in cls._cache:
+            return cls._cache[request]
+        _utils = cls._cache[request] = cls(request)
+        return _utils
+
+    @property
+    def query(self):
+        if not self._query:
+            result: dict[bytes, list[bytes]] = parse.parse_qs(self.request.query_string)
+            self._query = {k.decode('utf-8'): ''.join(b.decode('utf-8') for b in v) for k, v in result.items()}
+        return self._query
+
+    @property
+    def path(self):
+        if not self._path:
+            self._path = self.request.view_args
+        return self._path
+
+    @property
+    def host(self):
+        if not self._host:
+            self._host = self.request.host
+        return self._host
 
 
 __all__ = [

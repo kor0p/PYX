@@ -2,7 +2,7 @@ import uvicorn
 
 from os import path
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 from json import loads
 from fastapi import FastAPI, Request, Response
@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse, HTMLResponse
 
 from pyx.utils.core import classproperty
 from pyx.utils.id import __PYX_ID__
+
 # you can import any pyx.utils,
 # except pyx.utils.app and pyx.utils.dom,
 # because it raises ImportError('... (most likely due to a circular import) ...')
@@ -68,11 +69,7 @@ def create_app(name='<pyx>', **kwargs):
     _app.run = _run
     _app.mount(
         '/pyx/static',
-        StaticFiles(
-            directory=path.relpath(
-                (Path(path.abspath(__file__)) / '../../static').resolve()
-            )
-        ),
+        StaticFiles(directory=path.relpath((Path(path.abspath(__file__)) / '../../static').resolve())),
         name='static',
     )
 
@@ -80,6 +77,7 @@ def create_app(name='<pyx>', **kwargs):
     async def _setting_request_to_scope(req: Request, call_next):
         _set_request(req)
         return await call_next(req)
+
     return _app
 
 
@@ -139,9 +137,7 @@ def handle_requests(request_prefix, on_error, rerender):
             print(req(**kw))
             return _from_request(_id, rerender(_id))
         except Exception as error:
-            return JSONResponse(
-                _from_request('error', on_error(str(error), kw)), _error_status
-            )
+            return JSONResponse(_from_request('error', on_error(str(error), kw)), _error_status)
 
     return __pyx__requests__
 
@@ -156,30 +152,43 @@ def __index__(func):
 
 
 class utils:
-    _query: dict = {}
-    _path: dict = {}
+    _cache: dict[Request, Any] = {}
+    request: Request
+
+    _query: dict[str, Any] = {}
+    _path: dict[str, Any] = {}
     _host: str = ''
 
+    def __init__(self, request=None):
+        self.request = request
+
     @classproperty
-    def query(cls):
-        if not cls._query:
+    def current(cls):
+        if request in cls._cache:
+            return cls._cache[request]
+        _utils = cls._cache[request] = cls(request)
+        return _utils
+
+    @property
+    def query(self):
+        if not self._query:
             try:
-                cls._query = request.query_params
+                self._query = self.request.query_params
             except KeyError:
                 pass
-        return cls._query
+        return self._query
 
-    @classproperty
-    def path(cls):
-        if not cls._path:
-            cls._path = request.path_params
-        return cls._path
+    @property
+    def path(self):
+        if not self._path:
+            self._path = self.request.path_params
+        return self._path
 
-    @classproperty
-    def host(cls):
-        if not cls._host:
-            cls._host = request.client.host
-        return cls._host
+    @property
+    def host(self):
+        if not self._host:
+            self._host = self.request.client.host
+        return self._host
 
 
 __all__ = [

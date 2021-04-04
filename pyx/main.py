@@ -3,7 +3,7 @@ import keyword
 from typing import Union, Optional, Callable, TypeVar, Any
 from types import ModuleType
 
-from .utils.app import create_request
+from .utils.app import create_request, get_request
 from .utils.children import ChildrenComponent
 from .utils.core import get_, is_class
 from .utils.dom import set_to_dom, get_session_id
@@ -33,7 +33,9 @@ class Options(JSON):
 
     _void_tag: bool
 
+    # runtime config
     parent: T
+    changed: bool
 
     def __init__(self, *a, **k):
         if a:
@@ -103,7 +105,7 @@ class Tag:
 
     @name.setter
     def name(self, name: str) -> None:
-        self._options['title'] = name
+        self._options.title = name
 
     def update(self, **k) -> T:
         return type(self)(self.f.__f__, **(self._options | k))
@@ -149,7 +151,7 @@ class Tag:
             return f
         self = super().__new__(cls)
 
-        if not callable(f) and f is not None:
+        if f is not None and (not callable(f) or isinstance(f, ChildrenComponent)):
             self.__init__(children=f, **k)
             return self
         self.__kw = JSON()
@@ -190,15 +192,17 @@ class Tag:
             **self._options,
         )
         if deep:
-            this._Tag__kw = self.__kw
+            this._Tag__kw = self.__kw.copy()
         return this
 
     def _handle_callable_attrs(self, k, v):
-        _hash = hash(v)
-        _key = self.name + '___' + k + '___' + str(_hash)
-        create_request(get_session_id(), _key, v)
+        _key = self.name + '___' + k + '___' + str(hash(self))
+        session = get_session_id()
+        if r := get_request(session, _key):
+            return hash(r)
+        create_request(session, _key, v)
         self._options.is_in_dom = True  # need to get __id__ on callback
-        return _hash
+        return hash(v)
 
     def _update_attrs(self):
         _attrs = JSON()
@@ -236,18 +240,24 @@ class Tag:
             pass
         """
         if decorator_or_children:
-            if isinstance(decorator_or_children, Callable):
+            if callable(decorator_or_children) and not isinstance(decorator_or_children, ChildrenComponent):
                 return type(self)(decorator_or_children, **self._options)
             else:
                 kw['children'] = [decorator_or_children, *rest_children] if rest_children else decorator_or_children
         is_cached = self._options.cache
+
+        this = None
         cached_key = None
         if is_cached:
             cached_key = self._get_cached_key(self.kw | kw)
             if cached := self._cached.get(cached_key):
-                return cached
+                if cached._options.changed:
+                    this = cached
+                else:
+                    return cached
 
-        this = self.clone(deep=True)
+        if this is None:
+            this = self.clone(deep=True)
         this.kw = JSON(self.kw | kw)
         tag_argspec = self._tag_argspec
         if not tag_argspec:
@@ -269,16 +279,17 @@ class Tag:
             this.kw['children'] = ChildrenComponent(kw['children'])
 
         if len(tag_argspec.args) == 0 or _is_class:
-            this.children = this.f(**kw)
+            this.children = this.f(**this.kw)
         elif 'tag' in kw:
-            this.children = this.f(this.f, **kw)
+            this.children = this.f(this.f, **this.kw)
         else:
-            this.children = this.f(tag=this.f, **kw)
+            this.children = this.f(tag=this.f, **this.kw)
 
         this.children._options.parent = this
 
         this._update_attrs()
-        this._options['init'] = False
+        this._options.init = False
+        this._options.changed = False
         if is_cached and not self.init:
             self._cached[cached_key] = this
         return this

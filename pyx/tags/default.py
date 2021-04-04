@@ -87,8 +87,8 @@ class __fragment__(**DEFAULT_TAG.extend):
     def __init__(self, *, children=''):
         self.children = children
 
-    def __render__(self):
-        return self.children
+    def __render__(self, tag):
+        return str(self.children)
 
 
 @MAIN_TAG

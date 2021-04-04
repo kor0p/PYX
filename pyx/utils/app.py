@@ -1,6 +1,8 @@
 import os
-from typing import Optional, Callable, TypeVar
+from typing import Optional, Callable, TypeVar, Any
 
+Request = TypeVar('Request')
+Utils = TypeVar('Utils')
 Response = TypeVar('Response')
 APP = TypeVar('APP')
 
@@ -29,18 +31,27 @@ get_cookie: Callable[[str, Optional[str]], str]
 set_cookie: Callable[[str, str, Optional[Response]], Response]
 create_request: Callable[[SALT_ID, str, TAG], None]
 get_request: Callable[[SALT_ID, str], Optional[TAG]]
-handle_requests: Callable[
-    [str, Callable[[str, dict], str], Callable[[str], str]], Route[..., Response]
-]
+handle_requests: Callable[[str, Callable[[str, dict], str], Callable[[str], str]], Route[..., Response]]
 __index__: Callable[[Route], None]
 
 make_response: Callable[[str], Response]
 
 
 class utils:
-    query: dict[str, str]
-    path: dict[str, str]
-    host: str
+    _cache: dict[Request, Utils] = {}
+
+    request: Request
+    query: dict[str, Any] = {}
+    path: dict[str, Any] = {}
+    host: str = ''
+
+    def __init__(self, request: Optional[Request] = None) -> Utils:
+        self.request = request
+
+    @property
+    def current(self) -> Utils:
+        ...
+
 
 if __APP__ == 'Flask':
     from pyx.apps.app_flask import *

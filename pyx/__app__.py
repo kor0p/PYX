@@ -44,10 +44,16 @@ def render(body: Union[str, Tag, PYXModule]):
     return response
 
 
+def rerender(_id):
+    tag = get_from_dom(_id)
+    tag._options.changed = True
+    return tag()
+
+
 handle_requests(
     '/pyx',
     lambda r, kw: render_error(traceback=r, session=__PYX_ID__, **kw),
-    lambda _id: get_from_dom(_id)(),
+    rerender,
 )
 
 

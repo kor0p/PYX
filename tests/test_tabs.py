@@ -5,7 +5,7 @@ from tests import test_1, test_2, test_3
 
 
 def main():
-    query = utils.query
+    query = utils.current.query
     tabs_list = [
         dict(name='page 1', children=test_1.__pyx__, url='/?page=1'),
         dict(name='page 2', children=test_2.__pyx__, url='/?page=2'),
